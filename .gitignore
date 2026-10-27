@@ -1,0 +1,15 @@
+.DS_Store
+.claude/
+node_modules/
+
+# Private: hosting details and the real pm2 config (Client ID, server paths)
+PRIVATE.md
+ecosystem.config.js
+
+# Separate projects that live in this folder
+stickervote/
+telegramstickers/
+tools/cut_stickers.py
+
+# Sample of a commercial song: bring your own loop
+public/audio/menu-loop.wav

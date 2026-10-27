@@ -1,0 +1,12 @@
+{
+  "name": "malle-song-contest",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Mallorca-themed two-player song guessing game powered by your Spotify playlists",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

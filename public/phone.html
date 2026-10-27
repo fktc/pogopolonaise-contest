@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#F2E060">
+  <title>Pogo &amp; Polonaise · Buzzer</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect x='10' y='16' width='80' height='68' fill='%23E8508A' stroke='%23141414' stroke-width='8' transform='rotate(-8 50 50)'/><text x='50' y='74' font-size='62' font-family='Impact,sans-serif' text-anchor='middle' fill='%23141414'>P</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@600;700;800&family=Yellowtail&display=swap" rel="stylesheet">
+  <style>
+    /* Pogo & Polonaise: four colours, flat, thick outlines, hard offsets, nothing straight. */
+    :root {
+      --black: #141414; --pink: #E8508A; --yellow: #F2E060; --white: #FFFFFF;
+      --head: 'Anton', Impact, sans-serif; --script: 'Yellowtail', cursive; --body: 'Archivo', system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body { margin: 0; height: 100%; }
+    [hidden] { display: none !important; }
+    body {
+      font-family: var(--body); color: var(--black); background: var(--yellow);
+      width: 100%; overflow: hidden; touch-action: manipulation; user-select: none; -webkit-user-select: none;
+      display: flex; flex-direction: column; align-items: center;
+      padding: max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom));
+      gap: 12px;
+    }
+    /* Player 1 is pink, player 2 black. */
+    body.p0 { --pc: var(--pink); --pc-ink: var(--black); --pc-shadow: var(--black); }
+    body.p1 { --pc: var(--black); --pc-ink: var(--yellow); --pc-shadow: var(--pink); }
+
+    header { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+    .brand { display: flex; align-items: center; gap: 6px; transform: rotate(-3deg); }
+    .brand .pogo { font-family: var(--head); text-transform: uppercase; font-size: 1.3rem; background: var(--pink); border: 3px solid var(--black); padding: 0 8px; line-height: 1.15; }
+    .brand .pol { font-family: var(--script); font-size: 1.4rem; }
+    .name {
+      font-family: var(--head); text-transform: uppercase; font-size: 2rem; line-height: 1.05;
+      background: var(--pc); color: var(--pc-ink); border: 3px solid var(--black); padding: 2px 14px; transform: rotate(-2deg);
+    }
+    .score { font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.9rem; }
+    .score b { font-family: var(--head); font-weight: 400; font-size: 2rem; text-shadow: 3px 3px 0 var(--pink); margin-right: 4px; }
+
+    .buzz-wrap { flex: 1; min-height: 0; width: 100%; display: grid; place-items: center; position: relative; }
+    .burst { position: absolute; width: min(98vw, 58vh); aspect-ratio: 1; display: none; }
+    .buzz-wrap.ready .burst { display: block; animation: wobble 3s ease-in-out infinite alternate; }
+    @keyframes wobble { from { transform: rotate(-6deg); } to { transform: rotate(8deg); } }
+    .buzz {
+      position: relative; width: min(74vw, 42vh); aspect-ratio: 1; border-radius: 50%;
+      border: 6px solid var(--black); background: var(--pc); color: var(--pc-ink);
+      font-family: var(--head); text-transform: uppercase; font-size: clamp(3rem, 15vw, 5rem); letter-spacing: 0.02em;
+      box-shadow: 10px 10px 0 var(--pc-shadow); transform: rotate(-5deg);
+      transition: transform 0.08s, box-shadow 0.08s;
+    }
+    .buzz.pressed { transform: rotate(-5deg) translate(8px, 8px); box-shadow: 2px 2px 0 var(--pc-shadow); }
+    /* Waiting: flat white with a dashed outline — no transparency, it would mix off-brand colours. */
+    .buzz:disabled { background: var(--white); color: var(--black); border-style: dashed; box-shadow: none; }
+    .buzz.mine { background: var(--pc); color: var(--pc-ink); border-style: solid; box-shadow: 10px 10px 0 var(--pc-shadow); animation: shake 0.3s steps(2) infinite; }
+    @keyframes shake { 50% { translate: 3px -3px; } }
+
+    .status {
+      min-height: 3em; max-width: 92vw; text-align: center; display: grid; place-items: center;
+      font-weight: 800; font-size: 1.15rem; line-height: 1.2;
+      background: var(--white); border: 4px solid var(--black); box-shadow: 5px 5px 0 var(--black);
+      padding: 8px 16px; transform: rotate(-1.5deg);
+    }
+    .answer {
+      display: flex; align-items: center; gap: 12px; max-width: 92vw;
+      background: var(--white); border: 4px solid var(--black); box-shadow: 6px 6px 0 var(--pink); padding: 8px 12px; transform: rotate(2deg);
+    }
+    .answer img { width: 56px; height: 56px; object-fit: cover; border: 3px solid var(--black); }
+    .answer .t { font-family: var(--head); text-transform: uppercase; font-size: 1.4rem; line-height: 1.05; }
+    .answer .a { font-weight: 700; }
+    .pass {
+      font-family: var(--head); text-transform: uppercase; letter-spacing: 0.04em; font-size: 1.2rem;
+      background: var(--white); color: var(--black); border: 3px solid var(--black); padding: 8px 22px;
+      box-shadow: 5px 5px 0 var(--black); transform: rotate(-2deg);
+    }
+    .pass:active { transform: rotate(-2deg) translate(4px, 4px); box-shadow: 1px 1px 0 var(--black); }
+    .pass:disabled { border-style: dashed; box-shadow: none; }
+    /* Quizmaster controls: the opponent of whoever buzzed judges; anyone moves on to the next song. */
+    .controls { display: grid; gap: 12px; width: min(92vw, 420px); }
+    .controls .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .ctl {
+      font-family: var(--head); text-transform: uppercase; letter-spacing: 0.04em; font-size: 1.5rem;
+      border: 3px solid var(--black); padding: 10px; box-shadow: 5px 5px 0 var(--black); transform: rotate(-2deg);
+    }
+    .ctl:active { transform: rotate(-2deg) translate(4px, 4px); box-shadow: 1px 1px 0 var(--black); }
+    .ctl.show { background: var(--white); color: var(--black); }
+    .ctl.ok { background: var(--black); color: var(--yellow); }
+    .ctl.bad { background: var(--pink); color: var(--black); }
+    .ctl.next { background: var(--black); color: var(--yellow); box-shadow: 5px 5px 0 var(--pink); font-size: 1.8rem; }
+    body.judging .buzz { width: min(42vw, 22vh); font-size: clamp(1.8rem, 9vw, 2.6rem); }
+    body.judging .burst { display: none; }
+    .claim { font-family: var(--head); text-transform: uppercase; font-size: 1rem; letter-spacing: 0.03em; text-shadow: 2px 2px 0 var(--pink); transform: rotate(-3deg); }
+    .conn {
+      position: fixed; top: max(10px, env(safe-area-inset-top)); right: 10px;
+      font-size: 0.7rem; font-weight: 800; text-transform: uppercase; background: var(--black); color: var(--white); padding: 2px 8px;
+    }
+    .conn.off { background: var(--pink); color: var(--black); }
+    .error { margin: auto; text-align: center; font-size: 1.3rem; font-weight: 800; padding: 24px; background: var(--white); border: 4px solid var(--black); }
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+  </style>
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="starburst" viewBox="0 0 200 200">
+      <path d="M100 6 L116 62 L168 22 L146 80 L196 86 L150 112 L184 160 L126 136 L118 194 L96 142 L58 186 L66 128 L8 140 L52 102 L10 64 L68 70 L50 16 L92 56 Z"
+            fill="#F2E060" stroke="#141414" stroke-width="9" stroke-linejoin="round"/>
+    </symbol>
+  </svg>
+  <div class="conn" id="conn">verbinde…</div>
+  <header>
+    <div class="brand"><span class="pogo">Pogo</span><span class="pol">&amp; Polonaise</span></div>
+    <div class="name" id="name">…</div>
+    <div class="score"><b id="score">0</b>Punkte <span id="target"></span></div>
+  </header>
+  <div class="buzz-wrap" id="buzz-wrap">
+    <svg class="burst"><use href="#starburst"/></svg>
+    <button class="buzz" id="buzz" disabled>Buzz!</button>
+  </div>
+  <div class="answer" id="answer" hidden><img id="cover" alt=""><div><div class="t" id="title"></div><div class="a" id="artists"></div></div></div>
+  <div class="status" id="status">Warte aufs Spiel…</div>
+  <div class="controls" id="judge" hidden>
+    <button class="ctl show" id="j-show">Song zeigen</button>
+    <div class="row"><button class="ctl ok" id="j-ok">Richtig</button><button class="ctl bad" id="j-bad">Falsch</button></div>
+  </div>
+  <div class="controls" id="next-wrap" hidden><button class="ctl next" id="next">Nächster Song!</button></div>
+  <button class="pass" id="pass" disabled>Kenn ich nicht</button>
+  <div class="claim">Kein Können. Nur Wollen.</div>
+
+  <script>
+    'use strict';
+    const $ = (id) => document.getElementById(id);
+    const q = new URLSearchParams(location.search);
+    const SESSION = q.get('s');
+    const ME = Number(q.get('p'));
+    const KEY = q.get('k');
+    let state = null;
+    let es = null;
+    let connected = null;
+
+    // Diagnostics end up in the server log next to the game's, tagged with this phone's tab id.
+    const LOG_TAB = Math.random().toString(36).slice(2, 8);
+    function sendLog(level, ...parts) {
+      const msg = [`player ${ME + 1}`, ...parts].map((x) => (typeof x === 'string' ? x : JSON.stringify(x))).join(' ');
+      fetch('/log', { method: 'POST', body: JSON.stringify({ tab: LOG_TAB, role: 'phone', level, msg }), keepalive: true }).catch(() => {});
+    }
+    addEventListener('error', (e) => sendLog('error', 'uncaught:', e.message, `line ${e.lineno}`));
+    addEventListener('unhandledrejection', (e) => sendLog('error', 'unhandled rejection:', String(e.reason)));
+
+    if (!SESSION || ![0, 1].includes(ME) || !KEY) {
+      document.body.innerHTML = '<div class="error">Der Link ist unvollständig. Scann den QR-Code auf dem Spielbildschirm nochmal.</div>';
+      throw new Error('bad link');
+    }
+    document.body.classList.add(`p${ME}`);
+
+    function connect() {
+      es?.close();
+      es = new EventSource(`/api/session/${SESSION}/phone?p=${ME}&k=${encodeURIComponent(KEY)}`);
+      es.addEventListener('state', (e) => {
+        state = JSON.parse(e.data);
+        render();
+      });
+      es.onopen = () => setConn(true);
+      es.onerror = () => {
+        setConn(false);
+        // CLOSED means the server refused us (e.g. it restarted and the game hasn't come back yet): keep trying.
+        if (es.readyState === EventSource.CLOSED) setTimeout(connect, 3000);
+      };
+    }
+
+    function setConn(ok) {
+      if (ok !== connected) sendLog('info', ok ? 'connected' : 'connection lost', `| ${navigator.userAgent.slice(0, 60)}`);
+      connected = ok;
+      $('conn').textContent = ok ? 'verbunden' : 'verbinde neu…';
+      $('conn').classList.toggle('off', !ok);
+      if (!ok) $('status').textContent = 'Verbinde mit dem Spiel…';
+    }
+
+    function press(action) {
+      navigator.vibrate?.(action === 'buzz' ? 70 : 25);
+      fetch(`/api/session/${SESSION}/press`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ p: ME, k: KEY, action }),
+        keepalive: true,
+      })
+        .then((res) => res.ok ? res.json() : Promise.reject(new Error(`HTTP ${res.status}`)))
+        .then((r) => { if (!r.delivered) sendLog('info', action, 'pressed but the game screen is not connected'); })
+        .catch((err) => sendLog('error', action, 'press failed:', err.message));
+    }
+
+    function statusText() {
+      const s = state;
+      const me = s.players[ME];
+      const other = s.players[1 - ME];
+      switch (s.phase) {
+        case 'setup': return 'Du bist drin! Warte, bis das Spiel startet…';
+        case 'idle': return 'Mach dich bereit…';
+        case 'loading': return 'Nächste Platte kommt…';
+        case 'playing':
+          if (me.out === 'wrong') return 'Falsch – diese Runde bist du raus';
+          if (me.out === 'pass') return `Gepasst – ${other.name} darf noch buzzern`;
+          if (s.reducedFor?.[ME]) return `Kennst du ihn? BUZZ! (${s.factor} Punkte – ${other.name} kennt ihn nicht)`;
+          return 'Kennst du ihn? BUZZ!';
+        case 'answering':
+          if (s.buzzer === ME) return 'Gebuzzert! Sag den Song laut!';
+          if (s.canJudge?.[ME]) return s.answerShown ? `Hat ${other.name} recht?` : `${other.name} hat gebuzzert – hör zu und entscheide`;
+          return `${other.name} antwortet…`;
+        case 'reveal': {
+          const r = s.result || {};
+          const wait = s.ready?.[ME] ? ` – warte auf ${other.name}` : '';
+          if (r.type === 'correct') {
+            const why = r.reduced ? (r.player === ME ? ` (${s.factor}, ${other.name} kannte ihn nicht)` : ' (weniger, du hast gepasst)') : '';
+            return (r.player === ME ? `Richtig! +${r.points} Punkte${why}` : `${other.name} hat's (+${r.points}${why})`) + wait;
+          }
+          if (r.type === 'timeout') return `Zeit um!${wait}`;
+          return `Keiner hat's!${wait}`;
+        }
+        case 'over':
+          if (s.winner === -1) return 'Unentschieden!';
+          return s.winner === ME ? 'Sieg! Du hast gewonnen!' : `${other.name} gewinnt diesmal`;
+        default: return '';
+      }
+    }
+
+    function render() {
+      const s = state;
+      const me = s.players[ME];
+      $('name').textContent = me.name;
+      $('score').textContent = me.score;
+      $('target').textContent = s.target ? `· bis ${s.target}` : '';
+      document.title = `${me.name} · Pogo & Polonaise`;
+
+      const buzz = $('buzz');
+      const canBuzz = Boolean(s.canBuzz?.[ME]);
+      const mine = s.phase === 'answering' && s.buzzer === ME;
+      buzz.disabled = !canBuzz && !mine;
+      $('buzz-wrap').classList.toggle('ready', canBuzz);
+      buzz.classList.toggle('mine', mine);
+      buzz.textContent = mine ? 'Sag an!' : 'Buzz!';
+      $('pass').disabled = !s.canPass?.[ME];
+      const judging = Boolean(s.canJudge?.[ME]);
+      document.body.classList.toggle('judging', judging);
+      $('judge').hidden = !judging;
+      $('j-show').hidden = Boolean(s.answerShown);
+      $('next-wrap').hidden = !s.canNext?.[ME];
+
+      $('answer').hidden = !s.answer;
+      if (s.answer) {
+        $('title').textContent = s.answer.title;
+        $('artists').textContent = s.answer.artists;
+        $('cover').hidden = !s.answer.image;
+        if (s.answer.image) $('cover').src = s.answer.image;
+      }
+      $('status').textContent = statusText();
+    }
+
+    // pointerdown instead of click: every millisecond counts on a buzzer.
+    $('buzz').addEventListener('pointerdown', (e) => {
+      e.preventDefault();
+      if (!state?.canBuzz?.[ME]) return;
+      $('buzz').classList.add('pressed');
+      press('buzz');
+    });
+    addEventListener('pointerup', () => $('buzz').classList.remove('pressed'));
+    $('pass').addEventListener('pointerdown', (e) => {
+      e.preventDefault();
+      if (state?.canPass?.[ME]) press('pass');
+    });
+    for (const [id, action, allowed] of [
+      ['j-show', 'show', () => state?.canJudge?.[ME]],
+      ['j-ok', 'correct', () => state?.canJudge?.[ME]],
+      ['j-bad', 'wrong', () => state?.canJudge?.[ME]],
+      ['next', 'next', () => state?.canNext?.[ME]],
+    ]) {
+      $(id).addEventListener('click', () => { if (allowed()) press(action); });
+    }
+
+    // Keep the screen awake while playing (where supported).
+    async function stayAwake() {
+      try { await navigator.wakeLock?.request('screen'); } catch { /* not supported or not allowed */ }
+    }
+    addEventListener('pointerdown', stayAwake, { once: true });
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        stayAwake();
+        if (!es || es.readyState === EventSource.CLOSED) connect();
+      }
+    });
+
+    connect();
+  </script>
+</body>
+</html>

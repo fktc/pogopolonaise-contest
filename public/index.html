@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pogo &amp; Polonaise</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect x='10' y='16' width='80' height='68' fill='%23E8508A' stroke='%23141414' stroke-width='8' transform='rotate(-8 50 50)'/><text x='50' y='74' font-size='62' font-family='Impact,sans-serif' text-anchor='middle' fill='%23141414'>P</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;600;700;800&family=Yellowtail&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Brand shapes: starburst (irregular spikes), sparkle (4-point star), drip -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <symbol id="starburst" viewBox="0 0 200 200">
+        <path d="M100 6 L116 62 L168 22 L146 80 L196 86 L150 112 L184 160 L126 136 L118 194 L96 142 L58 186 L66 128 L8 140 L52 102 L10 64 L68 70 L50 16 L92 56 Z"
+              fill="#F2E060" stroke="#141414" stroke-width="9" stroke-linejoin="round"/>
+      </symbol>
+      <symbol id="sparkle" viewBox="0 0 100 100">
+        <path d="M50 4 C55 38 62 45 96 50 C62 55 55 62 50 96 C45 62 38 55 4 50 C38 45 45 38 50 4 Z"
+              fill="currentColor" stroke="#141414" stroke-width="6" stroke-linejoin="round"/>
+      </symbol>
+    </defs>
+  </svg>
+
+  <div class="scene" aria-hidden="true">
+    <div class="tape"></div>
+    <div class="banner-bg"></div>
+    <svg class="burst b1"><use href="#starburst"/></svg>
+    <svg class="burst b2"><use href="#starburst"/></svg>
+    <svg class="burst b3"><use href="#starburst"/></svg>
+    <svg class="spark s1"><use href="#sparkle"/></svg>
+    <svg class="spark s2"><use href="#sparkle"/></svg>
+    <svg class="spark s3"><use href="#sparkle"/></svg>
+    <svg class="spark s4"><use href="#sparkle"/></svg>
+  </div>
+
+  <main>
+    <!-- ============ SETUP ============ -->
+    <section class="screen" id="screen-setup">
+      <header class="logo">
+        <div class="logo-label">Punk × Schlager</div>
+        <div class="wordmark">
+          <div class="wm-pogo">
+            <span>Pogo</span>
+            <svg class="wm-star"><use href="#starburst"/></svg>
+            <!-- the one dripping element of this screen -->
+            <svg class="wm-drip" viewBox="0 0 400 70" preserveAspectRatio="none" aria-hidden="true">
+              <path d="M0 2 H400 V2
+                       C372 2 368 6 366 14 C364 24 364 34 357 34 C350 34 350 24 348 14 C346 6 330 4 300 4
+                       C278 4 274 10 272 22 C270 40 270 58 259 58 C248 58 248 40 246 22 C244 10 230 4 200 4
+                       C160 4 152 8 150 14 C148 20 148 26 142 26 C136 26 136 20 134 14 C132 8 110 4 80 4
+                       C64 4 60 10 58 20 C56 34 56 44 47 44 C38 44 38 34 36 20 C34 10 24 4 0 4 Z"
+                    fill="#E8508A" stroke="#141414" stroke-width="5" stroke-linejoin="round"/>
+              <rect x="0" y="0" width="400" height="5" fill="#E8508A"/>
+            </svg>
+          </div>
+          <div class="wm-pol"><span class="amp">&amp;</span><span class="script">Polonaise</span></div>
+        </div>
+        <p class="claim">Drei Akkorde. Alle singen mit.</p>
+        <div class="logo-links">
+          <button type="button" class="mode-link" id="menu-music">Musik an</button>
+          <a class="mode-link" id="mode-link" hidden></a>
+        </div>
+      </header>
+
+      <form class="card setup" id="setup-form" autocomplete="off">
+        <div class="step">
+          <h2><span class="num">1</span> Spotify</h2>
+          <div id="spotify-disconnected">
+            <label class="field" id="client-id-field">Client ID
+              <input id="client-id" placeholder="von developer.spotify.com/dashboard" spellcheck="false">
+            </label>
+            <p class="hint" id="client-id-hint">Trag <code id="redirect-uri"></code> in deiner Spotify-App als Redirect URI ein. Zum Abspielen brauchst du Spotify Premium.</p>
+            <button type="button" class="btn spotify" id="connect-btn">Mit Spotify verbinden</button>
+          </div>
+          <div id="spotify-connected" hidden>
+            <p class="connected">Verbunden als <strong id="me-name">…</strong> <span class="warn" id="me-warn"></span></p>
+            <button type="button" class="link" id="disconnect-btn">Trennen</button>
+            <div class="devices" id="devices" hidden>
+              <div class="devices-head"><b>Musik läuft auf</b> <button type="button" class="link" id="devices-refresh">Aktualisieren</button></div>
+              <div id="device-list"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <h2><span class="num">2</span> Playlists</h2>
+          <textarea id="playlists" rows="3" spellcheck="false" placeholder="https://open.spotify.com/playlist/…&#10;ein Link pro Zeile"></textarea>
+          <p class="hint">Ein oder mehrere Playlist- oder Album-Links. Alle Songs kommen in einen Topf.</p>
+          <div id="recent" class="recent" hidden>
+            <p class="hint">Zuletzt gespielt – antippen zum Dazunehmen oder Weglassen:</p>
+            <div id="recent-list"></div>
+          </div>
+        </div>
+
+        <div class="step">
+          <h2><span class="num">3</span> Spieler</h2>
+          <div class="players-setup">
+            <label class="pl p1"><span class="keycap">A</span><input id="name1" maxlength="24"></label>
+            <label class="pl p2"><span class="keycap">L</span><input id="name2" maxlength="24"></label>
+          </div>
+          <div class="phones-setup" id="phones-setup" hidden>
+            <div class="pq p1" data-phone-setup="0">
+              <div class="qr"></div>
+              <div><div class="pq-title"><b class="pq-name"></b>: scannen und mit dem Handy buzzern</div><div class="pq-status"></div></div>
+            </div>
+            <div class="pq p2" data-phone-setup="1">
+              <div class="qr"></div>
+              <div><div class="pq-title"><b class="pq-name"></b>: scannen und mit dem Handy buzzern</div><div class="pq-status"></div></div>
+            </div>
+            <p class="hint">Optional. Die Tastatur geht weiterhin. Drück auf dem Handy BUZZ zum Testen.</p>
+          </div>
+        </div>
+
+        <div class="step">
+          <h2><span class="num">4</span> Regeln</h2>
+          <div class="rules">
+            <label class="field">Punkte zum Sieg
+              <input type="number" id="target" min="1" max="500">
+            </label>
+            <label class="field">Zeit pro Song
+              <select id="limit">
+                <option value="15">15 Sekunden</option>
+                <option value="20">20 Sekunden</option>
+                <option value="30">30 Sekunden</option>
+                <option value="45">45 Sekunden</option>
+                <option value="60">60 Sekunden</option>
+              </select>
+            </label>
+            <label class="field">Song startet
+              <select id="start-pos">
+                <option value="intro">am Anfang</option>
+                <option value="random">irgendwo mittendrin</option>
+              </select>
+            </label>
+            <p class="hint score-note">Schnell sein lohnt sich: Ein Song ist am Anfang 10 Punkte wert und sinkt bis auf 1 Punkt, wenn die Zeit abläuft.</p>
+            <label class="check pass-rule">Sagt jemand «kenn ich nicht», kriegt das andere Team
+              <select id="pass-factor">
+                <option value="0.5">die Hälfte</option>
+                <option value="0.25">ein Viertel</option>
+                <option value="1">alle</option>
+              </select>
+              der Punkte <span class="hint">– eigene Playlist-Songs sind kein Freipass.</span>
+            </label>
+            <label class="check"><input type="checkbox" id="penalty"> −2 Punkte für eine falsche Antwort</label>
+          </div>
+        </div>
+
+        <button type="submit" class="btn primary big" id="start-btn">Los geht's!</button>
+      </form>
+    </section>
+
+    <!-- ============ LOADING ============ -->
+    <section class="screen" id="screen-loading" hidden>
+      <div class="card loading-card">
+        <svg class="spinner"><use href="#starburst"/></svg>
+        <h2>Platten werden aufgelegt…</h2>
+        <ul class="load-log" id="load-log"></ul>
+        <button type="button" class="btn ghost" id="load-back" hidden>Zurück</button>
+      </div>
+    </section>
+
+    <!-- ============ GAME ============ -->
+    <section class="screen" id="screen-game" hidden>
+      <div class="topbar">
+        <div class="pill" id="round-info">Song 1</div>
+        <div class="mini-logo"><span class="mini-pogo">Pogo</span><span class="mini-pol">&amp; Polonaise</span></div>
+        <div class="top-right">
+          <label class="vol" title="Lautstärke">Laut <input type="range" id="volume" min="0" max="1" step="0.05"></label>
+          <button type="button" class="btn ghost small" id="end-btn">Spiel beenden</button>
+        </div>
+      </div>
+
+      <div class="arena">
+        <div class="player p1" id="p0" data-player="0">
+          <div class="keycap">A</div>
+          <div class="pname"></div>
+          <div class="score">0</div>
+          <div class="pbar"><i></i></div>
+          <div class="pstatus"></div>
+          <button type="button" class="pass" data-pass="0"><kbd>S</kbd> kenn ich nicht</button>
+          <div class="phone-qr" data-phone="0" hidden><div class="qr"></div><span class="pq-status"></span></div>
+        </div>
+
+        <div class="stage">
+          <div class="disc-wrap" id="disc-wrap">
+            <svg class="ring" viewBox="0 0 120 120"><circle class="ring-bg" cx="60" cy="60" r="56"/><circle class="ring-fg" id="ring" cx="60" cy="60" r="56"/></svg>
+            <div class="disc" id="disc">
+              <div class="disc-label"><span class="qmark">?</span><img id="cover" alt=""></div>
+            </div>
+          </div>
+          <div class="clock" id="clock">0.0</div>
+          <div class="worth" id="worth"></div>
+          <div class="status" id="status"></div>
+          <div class="answer" id="answer" hidden>
+            <div class="a-title" id="a-title"></div>
+            <div class="a-orig" id="a-orig"></div>
+            <div class="a-artist" id="a-artist"></div>
+            <div class="a-meta" id="a-meta"></div>
+          </div>
+          <div class="actions" id="actions"></div>
+          <div class="peek" id="peek" hidden></div>
+        </div>
+
+        <div class="player p2" id="p1" data-player="1">
+          <div class="keycap">L</div>
+          <div class="pname"></div>
+          <div class="score">0</div>
+          <div class="pbar"><i></i></div>
+          <div class="pstatus"></div>
+          <button type="button" class="pass" data-pass="1"><kbd>K</kbd> kenn ich nicht</button>
+          <div class="phone-qr" data-phone="1" hidden><div class="qr"></div><span class="pq-status"></span></div>
+        </div>
+      </div>
+
+      <div class="keys-hint">
+        <span><kbd>A</kbd> / <kbd>L</kbd> buzzern, nach der Runde: bereit</span>
+        <span><kbd>Leertaste</kbd> Song zeigen</span>
+        <span><kbd>Q</kbd> / <kbd>W</kbd> Spieler 1 sagt: richtig / falsch</span>
+        <span><kbd>I</kbd> / <kbd>O</kbd> Spieler 2 sagt: richtig / falsch</span>
+        <span><kbd>S</kbd> / <kbd>K</kbd> kenn ich nicht</span>
+        <span><kbd>Esc</kbd> überspringen</span>
+        <span><kbd>H</kbd> halten: spicken (Quizmaster)</span>
+      </div>
+    </section>
+
+    <!-- ============ GAME OVER ============ -->
+    <section class="screen" id="screen-over" hidden>
+      <div class="card over-card">
+        <div class="trophy"><svg><use href="#starburst"/></svg><span>Sieg!</span></div>
+        <h2 id="winner-title"></h2>
+        <div class="final-scores" id="final-scores"></div>
+        <div id="scoreboard-wrap" hidden>
+          <h3>Ewige Tabelle</h3>
+          <table class="scoreboard">
+            <thead><tr><th></th><th class="sb-name">Name</th><th>Spiele</th><th>Siege</th><th>Niederl.</th><th>Unent.</th></tr></thead>
+            <tbody id="scoreboard"></tbody>
+          </table>
+          <button type="button" class="btn ghost small" id="scoreboard-reset">Tabelle löschen</button>
+        </div>
+        <h3>Gespielte Songs</h3>
+        <ol class="history" id="history"></ol>
+        <div class="over-actions">
+          <button type="button" class="btn primary" id="rematch-btn">Revanche!</button>
+          <button type="button" class="btn ghost" id="setup-btn">Einstellungen</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="overlay" id="overlay" hidden></div>
+  <div class="flash" id="flash"></div>
+  <canvas id="confetti"></canvas>
+  <div class="toasts" id="toasts"></div>
+
+  <script src="vendor/qrcode.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
