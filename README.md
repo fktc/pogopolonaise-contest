@@ -8,6 +8,9 @@ Follows the Pogo & Polonaise styleguide: only black `#141414`, pink `#E8508A`, y
 
 ## One-time setup
 
+Using a coding agent (Claude Code, Codex, Cursor…)? Just ask it to set the game up. [AGENTS.md](AGENTS.md) tells it how to walk you through connecting Spotify.
+
+
 1. **Create a Spotify app** at <https://developer.spotify.com/dashboard>.
    - Redirect URI: `http://127.0.0.1:8888/` (must be exactly this; Spotify doesn't accept `localhost`)
    - APIs used: **Web API** and **Web Playback SDK**
