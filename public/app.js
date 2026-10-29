@@ -42,14 +42,27 @@ const LS = {
   menuMusic: 'msc.menuMusic',
 };
 const DEFAULT_SETTINGS = {
-  playlists: 'https://open.spotify.com/playlist/7ug1Y9hDb5hoCVy1WDiLIf',
+  playlists: '', // own playlist links (Spotify, or Deezer as an addition to the mixes)
+  mixes: ['drei-akkorde'], // ready-made Deezer mixes, see MIXES
+  customLinks: false, // Deezer mode: own links only count while that part of the setup is open
   names: ['Team Nieten', 'Team Pailletten'],
   target: 50,
   limit: 30,
   startPos: 'intro',
   penalty: false,
   passFactor: 0.5, // the other player's points when someone says "don't know"
+  source: 'deezer', // 'deezer' (no login, 30 s previews) or 'spotify' (full songs, Premium)
 };
+// Ready-made song mixes for Deezer games, so nobody has to look for playlist links. "Drei Akkorde" ships with the
+// game (public/mixes/), the others are public Deezer playlists, mostly kept up to date by Deezer's own editors.
+const MIXES = [
+  { id: 'drei-akkorde', name: 'Drei Akkorde', info: 'Punk × Schlager – der Mix zum Spiel', file: 'mixes/drei-akkorde.json' },
+  { id: 'schlager', name: 'Schlager', info: 'Schlager Super Hits', deezer: '8699026122' },
+  { id: 'malle', name: 'Malle', info: 'Endlich wieder Malle', deezer: '10328601542' },
+  { id: 'punk', name: 'Deutschpunk', info: 'Wizo, Hosen, Slime & Co.', deezer: '13772623141' },
+  { id: 'apres-ski', name: 'Après-Ski', info: 'Hüttengaudi', deezer: '12244014291' },
+  { id: 'ndw', name: 'NDW', info: 'Neue Deutsche Welle', deezer: '6758361584' },
+];
 const BUZZ_KEYS = { a: 0, l: 1 };
 const PASS_KEYS = { s: 0, k: 1 };
 // The opponent of whoever buzzed judges the answer: Q/W for player 1, I/O for player 2.
@@ -279,14 +292,20 @@ async function api(pathOrUrl, { method = 'GET', body, retry = true, attempt = 0 
 
 // ====================================================================== playlists
 
+// Spotify links (22-character ids) and Deezer links (numeric ids, or link.deezer.com short links).
 function parseSources(text) {
   const sources = [];
   const invalid = [];
   for (const token of text.split(/\s+/)) {
     if (!token) continue;
-    const m = token.match(/(playlist|album)[/:]([A-Za-z0-9]{22})/);
-    if (!m) invalid.push(token);
-    else if (!sources.some((s) => s.id === m[2])) sources.push({ type: m[1], id: m[2] });
+    const spotify = token.match(/(playlist|album)[/:]([A-Za-z0-9]{22})/);
+    const deezer = token.match(/deezer\.com\/(?:[a-z]{2}(?:-[a-z]{2})?\/)?(playlist|album)\/(\d+)/i);
+    const short = /^https?:\/\/(link\.deezer\.com|deezer\.page\.link)\//i.test(token);
+    const src = spotify ? { service: 'spotify', type: spotify[1], id: spotify[2] }
+      : deezer ? { service: 'deezer', type: deezer[1].toLowerCase(), id: deezer[2] }
+        : short ? { service: 'deezer', short: token, id: token } : null;
+    if (!src) invalid.push(token);
+    else if (!sources.some((x) => x.id === src.id)) sources.push(src);
   }
   return { sources, invalid };
 }
@@ -427,23 +446,23 @@ function recentSources() {
 }
 function rememberSource(src, data) {
   const list = recentSources().filter((r) => r.id !== src.id);
-  list.unshift({ type: src.type, id: src.id, name: data.name, count: data.tracks.length, at: Date.now() });
+  list.unshift({ service: src.service || 'spotify', type: src.type, id: src.id, name: data.name, count: data.tracks.length, at: Date.now() });
   store.set(LS.recent, list.slice(0, RECENT_MAX));
 }
 
-function cacheSource(src, data) {
+function cacheSource(src, data, key = `msc.source.${src.type}.${src.id}`) {
   try {
-    store.set(`msc.source.${src.type}.${src.id}`, { at: Date.now(), data });
+    store.set(key, { at: Date.now(), data });
   } catch {
     // Storage full: drop old entries and carry on without caching.
-    for (const key of Object.keys(localStorage)) if (key.startsWith('msc.source.')) localStorage.removeItem(key);
+    for (const key of Object.keys(localStorage)) if (/^msc\.(dz)?source\./.test(key)) localStorage.removeItem(key);
   }
 }
 
 // Public playlists owned by someone else, read from Spotify's embed page via server.js (max 100 songs).
 // Covers and album names are filled in from the player once a song plays (see syncToPlayer).
-async function fetchEmbedPlaylist(id) {
-  const res = await fetch(`/embed/playlist/${id}`);
+async function fetchEmbedPlaylist(id, type = 'playlist') {
+  const res = await fetch(`/embed/${type}/${id}`);
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
   const tracks = data.tracks.filter((t) => t.playable).map((t) => ({
@@ -675,6 +694,210 @@ async function loadDevices() {
   }
 }
 
+// ====================================================================== Deezer (the default music source)
+
+// Deezer gives everyone 30-second previews without a login. They are plain MP3s the browser may load (CORS), so
+// they play through Web Audio: exact starts, fades that also work on phones, and a real crossfade — the next song
+// starts while the old one is still fading out. The server (deezer.js) supplies playlists and fresh preview links.
+const DEEZER_MAX_LIMIT = 25; // seconds per round: the previews are 30 s long
+const deezerPlayer = {
+  crossfade: true, // nextRound lets songs overlap instead of riser + drop
+  pollMs: 100,
+  level: store.get(LS.volume, 0.8),
+  fadeId: 0,
+  current: null, // { track, buffer, source, gain, startedAt, offset, paused, ended }
+  tails: new Set(), // songs still fading out
+  buffers: new Map(), // track id -> Promise<AudioBuffer>
+  get userVolume() { return store.get(LS.volume, 0.8); },
+  get ctx() {
+    sfx.init();
+    return sfx.ctx;
+  },
+  init() { return Promise.resolve(); },
+  transfer() { return Promise.resolve(); },
+
+  load(t) {
+    if (!this.buffers.has(t.id)) {
+      const loading = (async () => {
+        const res = await fetch(`/api/deezer/track/${t.id}`);
+        if (!res.ok) throw new Error(`Deezer HTTP ${res.status}`);
+        const { preview } = await res.json();
+        if (!preview) throw new Error('kein Ausschnitt verfügbar');
+        const audio = await fetch(preview, { signal: AbortSignal.timeout(15_000) });
+        if (!audio.ok) throw new Error(`Ausschnitt HTTP ${audio.status}`);
+        return this.ctx.decodeAudioData(await audio.arrayBuffer());
+      })();
+      loading.catch(() => this.buffers.delete(t.id));
+      this.buffers.set(t.id, loading);
+      if (this.buffers.size > 6) this.buffers.delete(this.buffers.keys().next().value);
+    }
+    return this.buffers.get(t.id);
+  },
+
+  async playFrom(tracks, index, positionMs) {
+    const t = tracks[index];
+    const buffer = await withTimeout(this.load(t), 20_000, 'der Ausschnitt lädt nicht');
+    if (this.current) this.retire(this.current, FADE_IN_MS); // the old song fades out while this one fades in
+    this.current = { track: t, buffer, offset: Math.min(positionMs / 1000, Math.max(0, buffer.duration - 1)), paused: true };
+    this.level = 0;
+    this.start(this.current);
+    const next = tracks[index + 1];
+    if (next) this.load(next).catch(() => {}); // ready before anyone presses "next"
+  },
+
+  start(c) {
+    const ctx = this.ctx;
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(Math.max(this.level, 0.0001), ctx.currentTime);
+    const src = ctx.createBufferSource();
+    src.buffer = c.buffer;
+    src.connect(gain).connect(ctx.destination);
+    src.onended = () => {
+      if (c.source !== src) return;
+      Object.assign(c, { source: null, offset: c.buffer.duration, paused: true, ended: true });
+    };
+    src.start(0, c.offset);
+    Object.assign(c, { source: src, gain, startedAt: ctx.currentTime - c.offset, paused: false, ended: false });
+  },
+
+  retire(c, ms) {
+    if (!c.source) return;
+    const ctx = this.ctx;
+    const g = c.gain.gain;
+    const src = c.source;
+    g.cancelScheduledValues(ctx.currentTime);
+    g.setValueAtTime(Math.max(g.value, 0.0001), ctx.currentTime);
+    g.exponentialRampToValueAtTime(0.0001, ctx.currentTime + ms / 1000);
+    src.stop(ctx.currentTime + ms / 1000 + 0.05);
+    this.tails.add(src);
+    src.addEventListener('ended', () => this.tails.delete(src));
+    c.source = null;
+  },
+
+  position(c = this.current) {
+    if (!c) return 0;
+    return c.paused ? c.offset : this.ctx.currentTime - c.startedAt;
+  },
+  remainingMs() {
+    const c = this.current;
+    return c && !c.paused ? (c.buffer.duration - this.position(c)) * 1000 : Infinity;
+  },
+
+  async state() {
+    const c = this.current;
+    if (!c) return null;
+    const t = c.track;
+    return {
+      paused: c.paused,
+      loading: false,
+      position: this.position(c) * 1000,
+      duration: c.buffer.duration * 1000,
+      track_window: { current_track: { uri: t.uri, id: t.id, name: t.name, artists: [{ name: t.artists }], album: { name: t.album, images: t.image ? [{ url: t.image, width: 1000 }] : [] } } },
+    };
+  },
+
+  pause() {
+    for (const tail of this.tails) tail.stop(); // a buzz silences a crossfade too
+    this.tails.clear();
+    const c = this.current;
+    if (c && !c.paused) {
+      c.offset = this.position(c);
+      c.paused = true;
+      const src = c.source;
+      c.source = null;
+      src?.stop();
+    }
+    return Promise.resolve();
+  },
+  resume() {
+    const c = this.current;
+    if (c && c.paused && !c.ended) this.start(c);
+    return Promise.resolve();
+  },
+  setVolume(v) {
+    this.level = v;
+    const g = this.current?.gain?.gain;
+    if (g) {
+      g.cancelScheduledValues(this.ctx.currentTime);
+      g.setValueAtTime(Math.max(v, 0.0001), this.ctx.currentTime);
+    }
+    return Promise.resolve();
+  },
+  async fade(to, ms) {
+    const id = ++this.fadeId;
+    const g = this.current?.gain?.gain;
+    if (g) {
+      const now = this.ctx.currentTime;
+      g.cancelScheduledValues(now);
+      g.setValueAtTime(Math.max(g.value, 0.0001), now);
+      g.linearRampToValueAtTime(Math.max(to, 0.0001), now + ms / 1000);
+    }
+    await sleep(ms);
+    if (id === this.fadeId) this.level = to;
+  },
+  disconnect() {
+    this.pause();
+    this.current = null;
+  },
+};
+
+// The music source of the running game: deezerPlayer or spotify (both offer the same methods).
+let music = spotify;
+
+const deezerTrack = (t, source) => ({
+  uri: `deezer:track:${t.id}`,
+  id: t.id,
+  name: t.name,
+  title: cleanTitle(t.title || t.name),
+  artists: t.artists,
+  album: t.album || '',
+  year: '',
+  image: t.image || '',
+  durationMs: 30_000, // the preview, not the song
+  source,
+});
+
+async function deezerApi(path, body) {
+  const res = await fetch(`/api/deezer/${path}`, body
+    ? { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }
+    : {});
+  const data = await res.json().catch(() => ({}));
+  if (res.status === 429) throw new Error('zu viele Anfragen – warte kurz');
+  if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+  return data;
+}
+
+// Load a source for a Deezer game. Spotify links work too: their songs are looked up on Deezer — the full list if
+// Spotify is connected, otherwise the first 100 from the playlist's public page.
+async function loadForDeezer(src, progress) {
+  if (src.mix?.file) { // ships with the game
+    const res = await fetch(`/${src.mix.file}`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    return { name: src.mix.name, tracks: data.tracks.map((t) => deezerTrack(t, src.mix.name)) };
+  }
+  if (src.mix) {
+    const data = await deezerApi(`playlist/${src.mix.deezer}`);
+    return { name: src.mix.name, tracks: data.tracks.map((t) => deezerTrack(t, src.mix.name)) };
+  }
+  if (src.service === 'deezer') {
+    const data = await deezerApi(`${src.type}/${src.id}`);
+    return { name: data.name, tracks: data.tracks.map((t) => deezerTrack(t, data.name)) };
+  }
+  const list = auth.connected
+    ? await (src.type === 'album' ? fetchAlbum(src.id) : fetchPlaylist(src.id, (n) => progress(`Lade Spotify-Playlist… ${n} Songs`)))
+    : await fetchEmbedPlaylist(src.id, src.type);
+  const found = [];
+  for (let i = 0; i < list.tracks.length; i += 100) {
+    progress(`Suche Songs auf Deezer… ${i} / ${list.tracks.length}`);
+    const chunk = list.tracks.slice(i, i + 100).map((t) => ({ name: t.name, artists: t.artists }));
+    const { matches } = await deezerApi('match', { tracks: chunk });
+    found.push(...matches.filter(Boolean));
+  }
+  const note = `${found.length} von ${list.tracks.length} auf Deezer gefunden${!auth.connected && list.tracks.length >= 100 ? ', nur die ersten 100' : ''}`;
+  return { name: list.name, tracks: found.map((t) => deezerTrack(t, list.name)), note };
+}
+
 // ====================================================================== sound effects
 
 const sfx = {
@@ -790,7 +1013,7 @@ const menuMusic = {
   source: null,
   gain: null,
 
-  get volume() { return Math.min(1, spotify.userVolume) * 0.5; },
+  get volume() { return Math.min(1, music.userVolume) * 0.5; },
 
   async start() {
     if (!this.wanted || this.source || ui.screen !== 'setup') return;
@@ -1166,6 +1389,10 @@ function fillSettingsForm(s) {
   $('#start-pos').value = s.startPos;
   $('#penalty').checked = s.penalty;
   $('#pass-factor').value = String(s.passFactor);
+  for (const r of document.querySelectorAll('input[name=source]')) r.checked = r.value === s.source;
+  setup.mixes = new Set(s.mixes);
+  setup.customLinks = s.customLinks;
+  renderMixes();
 }
 
 function readSettingsForm() {
@@ -1178,6 +1405,9 @@ function readSettingsForm() {
     startPos: $('#start-pos').value,
     penalty: $('#penalty').checked,
     passFactor: Number($('#pass-factor').value) || DEFAULT_SETTINGS.passFactor,
+    source: document.querySelector('input[name=source]:checked')?.value || DEFAULT_SETTINGS.source,
+    mixes: [...setup.mixes],
+    customLinks: setup.customLinks,
   };
 }
 
@@ -1190,6 +1420,7 @@ function renderRecent() {
     b.type = 'button';
     b.className = `btn small ${chosen.has(r.id) ? 'on' : 'ghost'}`;
     b.dataset.type = r.type;
+    b.dataset.service = r.service || 'spotify';
     b.dataset.id = r.id;
     b.setAttribute('aria-pressed', String(chosen.has(r.id)));
     b.textContent = `${r.name} · ${r.count}`;
@@ -1197,11 +1428,43 @@ function renderRecent() {
   }));
 }
 
+// What step 2 shows: the mix tiles (Deezer) and whether the own-links field is open.
+const setup = { mixes: new Set(DEFAULT_SETTINGS.mixes), customLinks: false };
+
+function renderMixes() {
+  $('#mixes').replaceChildren(...MIXES.map((m) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'mix';
+    b.dataset.mix = m.id;
+    b.setAttribute('aria-pressed', String(setup.mixes.has(m.id)));
+    b.innerHTML = `<b>${esc(m.name)}</b><span>${esc(m.info)}</span>`;
+    return b;
+  }));
+}
+
+// Step 1 decides what the rest of the setup screen shows.
+function renderSource() {
+  const deezerMode = (document.querySelector('input[name=source]:checked')?.value || DEFAULT_SETTINGS.source) === 'deezer';
+  $('#spotify-block').hidden = deezerMode;
+  $('#start-pos-field').hidden = deezerMode;
+  $('#limit-note').hidden = !deezerMode;
+  $('#start-btn').disabled = !deezerMode && !auth.connected;
+  // Deezer: mixes first; own links only on request. Spotify: own links are the only way (the mixes are Deezer songs).
+  $('#mixes-block').hidden = !deezerMode;
+  $('#custom-block').hidden = deezerMode && !setup.customLinks;
+  $('#custom-toggle').textContent = setup.customLinks ? '− Eigene Playlists weglassen' : '+ Eigene Playlist dazunehmen (Deezer- oder Spotify-Link)';
+  $('#playlists').placeholder = deezerMode ? 'https://www.deezer.com/playlist/…\nein Link pro Zeile' : 'https://open.spotify.com/playlist/…\nein Link pro Zeile';
+  $('#playlists-hint').textContent = deezerMode
+    ? 'Kommt zu den Mixen dazu. Spotify-Links gehen auch: die Songs werden auf Deezer gesucht.'
+    : 'Ein oder mehrere Spotify-Playlist- oder Album-Links. Alle Songs kommen in einen Topf.';
+}
+
 async function refreshConnection() {
   const connected = auth.connected;
   $('#spotify-disconnected').hidden = connected;
   $('#spotify-connected').hidden = !connected;
-  $('#start-btn').disabled = !connected;
+  renderSource();
   if (!connected) return;
   try {
     const me = await api('/me');
@@ -1274,16 +1537,27 @@ async function startGame(event) {
   event.preventDefault();
   const s = readSettingsForm();
   store.set(LS.settings, s);
-  if (!auth.connected) return toast('Verbinde zuerst Spotify.', 'error');
-  if (MOBILE && !spotify.deviceId) return toast('Wähl aus, wo die Musik läuft (Schritt 1) – Spotify-App öffnen und auf Aktualisieren tippen.', 'error', 7000);
+  const deezerMode = s.source === 'deezer';
+  if (!deezerMode && !auth.connected) return toast('Verbinde zuerst Spotify – oder nimm Deezer, das geht ohne Login.', 'error');
+  if (!deezerMode && MOBILE && !spotify.deviceId) return toast('Wähl aus, wo die Musik läuft (Schritt 1) – Spotify-App öffnen und auf Aktualisieren tippen.', 'error', 7000);
 
-  const { sources, invalid } = parseSources(s.playlists);
+  const useLinks = !deezerMode || s.customLinks;
+  const { sources, invalid } = useLinks ? parseSources(s.playlists) : { sources: [], invalid: [] };
   if (invalid.length) toast(`Unbekannte Links ignoriert: ${invalid.join(' ')}`, 'error', 7000);
-  if (!sources.length) return toast('Füg mindestens einen Spotify-Playlist-Link ein.', 'error');
+  let usable = deezerMode ? sources : sources.filter((x) => x.service === 'spotify');
+  if (usable.length < sources.length) toast('Deezer-Links gehen nur mit Deezer als Musikquelle (Schritt 1).', 'error', 7000);
+  if (deezerMode) usable = MIXES.filter((m) => s.mixes.includes(m.id)).map((m) => ({ service: 'mix', mix: m, type: 'mix', id: m.id })).concat(usable);
+  if (!usable.length) return toast(deezerMode ? 'Wähl mindestens einen Mix – oder füg eine eigene Playlist dazu.' : 'Füg mindestens einen Spotify-Playlist-Link ein.', 'error');
 
   // Must happen inside the click handler so browsers allow audio.
   sfx.init();
-  spotify.player?.activateElement?.();
+  if (!deezerMode) spotify.player?.activateElement?.();
+  music = deezerMode ? deezerPlayer : spotify;
+  if (deezerMode) {
+    // the previews are 30 s long and always start at the same spot
+    s.limit = Math.min(s.limit, DEEZER_MAX_LIMIT);
+    s.startPos = 'intro';
+  }
 
   showScreen('loading');
   const log = $('#load-log');
@@ -1299,32 +1573,45 @@ async function startGame(event) {
 
   // All sources load at the same time; ones loaded in the last hours come from the browser's cache.
   const loadStarted = performance.now();
-  const results = await Promise.all(sources.map(async (src) => {
-    const li = addLog(`Lade ${src.type === 'album' ? 'Album' : 'Playlist'}…`);
+  const results = await Promise.all(usable.map(async (src) => {
+    const li = addLog(src.mix ? `Lade Mix «${src.mix.name}»…` : `Lade ${src.type === 'album' ? 'Album' : 'Playlist'}…`);
     try {
-      const cached = await cachedSource(src);
-      let data = cached?.current ? cached.data : null;
-      let outdated = false;
-      if (!data) {
-        const progress = (n) => { li.textContent = `Lade Playlist… ${n} Songs`; };
-        try {
-          data = await (src.type === 'album' ? fetchAlbum(src.id) : fetchPlaylist(src.id, progress));
-          cacheSource(src, data);
-        } catch (err) {
-          if (!cached) throw err;
-          debugLog('load failed, using older copy', src.type, src.id, '|', err.message);
-          data = cached.data;
-          outdated = true;
+      if (src.short) Object.assign(src, await deezerApi(`resolve?url=${encodeURIComponent(src.short)}`), { short: null });
+      const progress = (text) => { li.textContent = typeof text === 'number' ? `Lade Playlist… ${text} Songs` : text; };
+      let data;
+      let notes;
+      if (deezerMode) {
+        const key = `msc.dzsource.${src.service}.${src.type}.${src.id}`;
+        const hit = store.get(key);
+        const fresh = hit && Date.now() - hit.at < SOURCE_CACHE_MS;
+        data = fresh ? hit.data : await loadForDeezer(src, progress);
+        if (!fresh) cacheSource(src, data, key);
+        notes = [src.service === 'spotify' && data.note, fresh && 'gemerkt'];
+      } else {
+        const cached = await cachedSource(src);
+        data = cached?.current ? cached.data : null;
+        let outdated = false;
+        if (!data) {
+          try {
+            data = await (src.type === 'album' ? fetchAlbum(src.id) : fetchPlaylist(src.id, progress));
+            cacheSource(src, data);
+          } catch (err) {
+            if (!cached) throw err;
+            debugLog('load failed, using older copy', src.type, src.id, '|', err.message);
+            data = cached.data;
+            outdated = true;
+          }
         }
+        notes = [data.note, cached?.current && 'gemerkt', outdated && 'ältere Version, Spotify antwortet nicht'];
       }
-      rememberSource(src, data);
-      const notes = [data.note, cached?.current && 'gemerkt', outdated && 'ältere Version, Spotify antwortet nicht'].filter(Boolean).join(', ');
+      if (!src.mix) rememberSource(src, data); // "Zuletzt gespielt" is for own links
+      notes = notes.filter(Boolean).join(', ');
       li.textContent = `${data.name} – ${data.tracks.length} Songs${notes ? ` (${notes})` : ''}`;
       li.className = 'ok';
       return data.tracks;
     } catch (err) {
-      debugLog('load failed', src.type, src.id, '|', err.message);
-      li.textContent = `${src.type} ${src.id}: ${err.message}`;
+      debugLog('load failed', src.service, src.type, src.id, '|', err.message);
+      li.textContent = `${src.type || 'Link'} ${src.short || src.id}: ${err.message}`;
       li.className = 'bad';
       return [];
     }
@@ -1339,9 +1626,9 @@ async function startGame(event) {
 
   const deviceLine = addLog('Boxen werden aufgedreht…');
   try {
-    await withTimeout(spotify.init(), 15000, 'The Spotify player did not start in time. Reload the page and try again.');
-    await spotify.transfer();
-    deviceLine.textContent = `Boxen bereit – ${tracks.length} Songs im Topf`;
+    await withTimeout(music.init(), 15000, 'The Spotify player did not start in time. Reload the page and try again.');
+    await music.transfer();
+    deviceLine.textContent = `Boxen bereit – ${tracks.length} Songs im Topf${deezerMode ? ' (Ausschnitte via Deezer)' : ''}`;
     deviceLine.className = 'ok';
   } catch (err) {
     deviceLine.textContent = err.message;
@@ -1354,7 +1641,7 @@ async function startGame(event) {
   game.s = s;
   game.players = s.names.map((name) => ({ name, score: 0, out: null }));
   game.tracks = shuffle(tracks);
-  debugLog('game start:', tracks.length, 'songs from', sources.length, 'source(s) | first to', s.target, `| ${s.limit}s per song, start: ${s.startPos}`);
+  debugLog('game start:', s.source, '|', tracks.length, 'songs from', usable.length, 'source(s) | first to', s.target, `| ${s.limit}s per song, start: ${s.startPos}`);
   newMatch();
 }
 
@@ -1377,17 +1664,21 @@ async function nextRound({ fade = false } = {}) {
     // must not start the next round while we're in this phase.
     Object.assign(game, { phase: 'fading', outroEndsAt: performance.now() + OUTRO_MS, hurry: false });
     render();
-    while (!game.hurry && performance.now() < game.outroEndsAt - OUTRO_FADE_MS) {
+    // (a 30-second Deezer clip may run out before the outro is over: then go on right away)
+    while (!game.hurry && performance.now() < game.outroEndsAt - OUTRO_FADE_MS && !(music.remainingMs?.() < 3000)) {
       await sleep(50);
       if (token !== game.token) return;
     }
-    // DJ transition. Spotify streams one song at a time, so two songs can't overlap: the old one fades down
-    // under a rising sweep, then a drop covers the moment Spotify switches to the new song (sfx.riser/drop).
-    const fadeMs = game.hurry ? QUICK_FADE_MS : OUTRO_FADE_MS;
-    sfx.riser(fadeMs / 1000);
-    await spotify.fade(spotify.userVolume * HANDOVER_LEVEL, fadeMs);
-    if (token !== game.token) return;
-    game.transition = true;
+    if (!music.crossfade) {
+      // DJ transition. Spotify streams one song at a time, so two songs can't overlap: the old one fades down
+      // under a rising sweep, then a drop covers the moment Spotify switches to the new song (sfx.riser/drop).
+      // Deezer clips play in the browser and really overlap instead (deezerPlayer.playFrom).
+      const fadeMs = game.hurry ? QUICK_FADE_MS : OUTRO_FADE_MS;
+      sfx.riser(fadeMs / 1000);
+      await music.fade(music.userVolume * HANDOVER_LEVEL, fadeMs);
+      if (token !== game.token) return;
+      game.transition = true;
+    }
   }
   game.phase = 'loading';
   if (decided()) return endGame({ record: true });
@@ -1403,14 +1694,14 @@ async function nextRound({ fade = false } = {}) {
   if (t.image) new Image().src = t.image; // preload the cover for the reveal
   render();
 
-  const state = await spotify.state();
+  const state = await music.state();
   game.prevUri = state?.track_window?.current_track?.uri ?? null; // the song that was on before this round
   if (game.transition) {
     game.transition = false;
     sfx.drop();
   }
   try {
-    await spotify.playFrom(game.tracks, game.index, game.startAt);
+    await music.playFrom(game.tracks, game.index, game.startAt);
   } catch (err) {
     if (token !== game.token) return;
     if (err.notRegistered) {
@@ -1424,16 +1715,16 @@ async function nextRound({ fade = false } = {}) {
   const started = performance.now();
   let nudged = false;
   while (token === game.token && game.phase === 'loading') {
-    const now = await spotify.state();
+    const now = await music.state();
     if (tryBegin(now)) return;
     // Loaded but sitting paused: give it a push once.
     if (!nudged && now?.paused && sameTrack(now.track_window?.current_track, t) && performance.now() - started > 1500) {
       nudged = true;
       debugLog('round', game.index + 1, 'loaded but paused — resuming');
-      spotify.resume();
+      music.resume();
     }
     if (performance.now() - started > 7000) return skipBroken('Spotify did not start it');
-    await sleep(spotify.pollMs);
+    await sleep(music.pollMs);
   }
 }
 
@@ -1497,7 +1788,7 @@ function skipBroken(reason) {
 
 function onPlayerState(state) {
   const t = currentTrack();
-  if (!state || !t) return;
+  if (!state || !t || music !== spotify) return;
   if (game.phase === 'loading') {
     tryBegin(state);
     return;
@@ -1522,8 +1813,8 @@ function beginPlaying() {
   game.failures = 0;
   startClock();
   const t = currentTrack();
-  debugLog('round', game.index + 1, 'started:', t.name, '—', t.artists, `| fade in from ${spotify.level.toFixed(2)}`);
-  spotify.fade(spotify.userVolume, FADE_IN_MS);
+  debugLog('round', game.index + 1, 'started:', t.name, '—', t.artists, `| fade in from ${music.level.toFixed(2)}`);
+  music.fade(music.userVolume, FADE_IN_MS);
   render();
 }
 
@@ -1536,7 +1827,7 @@ function buzz(i, via = 'keyboard') {
   debugLog('round', game.index + 1, 'buzz:', p.name, `via ${via} after ${(game.elapsedMs / 1000).toFixed(2)}s`);
   game.phase = 'answering';
   game.buzzer = i;
-  spotify.pause();
+  music.pause();
   sfx.buzz(i);
   flash(i);
   render();
@@ -1574,7 +1865,7 @@ function judge(correct) {
   if (game.answerShown || game.players.every((q) => q.out)) return reveal({ type: 'nobody' });
   game.phase = 'playing';
   startClock();
-  spotify.resume();
+  music.resume();
   render();
 }
 
@@ -1602,7 +1893,7 @@ function reveal(result) {
   game.ready = [false, false];
   game.history.push({ track: currentTrack(), result });
   debugLog('round', game.index + 1, 'result:', result.type, result.points ? `+${result.points}` : '', '| score', game.players.map((p) => p.score).join(':'));
-  spotify.resume(); // the full song keeps playing while everyone sees the answer
+  music.resume(); // the full song keeps playing while everyone sees the answer
   watchSongEnd(game.token);
   render();
 }
@@ -1612,7 +1903,7 @@ async function watchSongEnd(token) {
   while (token === game.token && game.phase === 'reveal') {
     await sleep(MOBILE ? 3000 : 1000); // the phone version polls Spotify's API: go easy on it
     if (token !== game.token || game.phase !== 'reveal') return;
-    const s = await spotify.state();
+    const s = await music.state();
     const duration = s?.duration || s?.track_window?.current_track?.duration_ms;
     if (s && !s.paused && duration && duration - s.position < OUTRO_MS + 1500) {
       debugLog('round', game.index + 1, 'song is ending — on to the next one');
@@ -1655,9 +1946,9 @@ function endGame({ keepMusic = false, record = false } = {}) {
   game.phase = 'over';
   if (record) recordResult();
   debugLog('game over after', game.history.length, 'songs | score', game.players.map((p) => `${p.name} ${p.score}`).join(' : '));
-  spotify.fadeId++; // stop any running fade
-  if (keepMusic) spotify.setVolume(spotify.userVolume); // the deciding song plays out under the scorecard
-  else spotify.pause().then(() => spotify.setVolume(spotify.userVolume));
+  music.fadeId++; // stop any running fade
+  if (keepMusic) music.setVolume(music.userVolume); // the deciding song plays out under the scorecard
+  else music.pause().then(() => music.setVolume(music.userVolume));
   renderOver();
   showScreen('over');
   sfx.fanfare();
@@ -1785,7 +2076,7 @@ function render() {
     $('#a-title').textContent = t.title;
     $('#a-orig').textContent = t.name !== t.title ? t.name : '';
     $('#a-artist').textContent = t.artists;
-    $('#a-meta').textContent = [t.album, t.year, `aus «${t.source}»`].filter(Boolean).join(' · ');
+    $('#a-meta').textContent = [t.album, t.year, `aus «${t.source}»`, t.uri.startsWith('deezer:') && 'Ausschnitt: Deezer'].filter(Boolean).join(' · ');
   }
 
   $('#status').textContent = statusText();
@@ -1868,6 +2159,26 @@ function renderScoreboard() {
 // ====================================================================== events
 
 $('#setup-form').addEventListener('submit', startGame);
+$('#mixes').addEventListener('click', (e) => {
+  const id = e.target.closest('[data-mix]')?.dataset.mix;
+  if (!id) return;
+  if (setup.mixes.has(id)) setup.mixes.delete(id);
+  else setup.mixes.add(id);
+  renderMixes();
+  store.set(LS.settings, readSettingsForm());
+});
+$('#custom-toggle').addEventListener('click', () => {
+  setup.customLinks = !setup.customLinks;
+  renderSource();
+  store.set(LS.settings, readSettingsForm());
+  if (setup.customLinks) $('#playlists').focus();
+});
+for (const r of document.querySelectorAll('input[name=source]')) {
+  r.addEventListener('change', () => {
+    store.set(LS.settings, readSettingsForm());
+    renderSource();
+  });
+}
 $('#menu-music').addEventListener('click', () => menuMusic.toggle());
 // Browsers only allow sound after a tap: the first interaction with the setup screen starts the menu loop.
 for (const type of ['pointerdown', 'keydown']) addEventListener(type, () => menuMusic.start(), { capture: true });
@@ -1880,7 +2191,7 @@ $('#recent-list').addEventListener('click', (e) => {
   const has = parseSources(field.value).sources.some((s) => s.id === b.dataset.id);
   field.value = (has
     ? lines.filter((l) => !l.includes(b.dataset.id))
-    : [...lines, `https://open.spotify.com/${b.dataset.type}/${b.dataset.id}`]).join('\n');
+    : [...lines, b.dataset.service === 'deezer' ? `https://www.deezer.com/${b.dataset.type}/${b.dataset.id}` : `https://open.spotify.com/${b.dataset.type}/${b.dataset.id}`]).join('\n');
   renderRecent();
 });
 $('#playlists').addEventListener('input', renderRecent);
@@ -1910,7 +2221,7 @@ $('#disconnect-btn').addEventListener('click', () => {
 
 $('#load-back').addEventListener('click', () => showScreen('setup'));
 $('#setup-btn').addEventListener('click', () => {
-  spotify.pause();
+  music.pause();
   showScreen('setup');
 });
 $('#rematch-btn').addEventListener('click', () => {
@@ -1932,8 +2243,8 @@ $('#volume').addEventListener('change', (e) => e.target.blur()); // hand the key
 $('#volume').addEventListener('input', (e) => {
   const v = Number(e.target.value);
   store.set(LS.volume, v);
-  spotify.fadeId++; // the slider wins over a running fade
-  spotify.setVolume(v);
+  music.fadeId++; // the slider wins over a running fade
+  music.setVolume(v);
   menuMusic.setVolume();
 });
 

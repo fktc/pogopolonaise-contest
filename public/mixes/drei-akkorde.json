@@ -1,0 +1,782 @@
+{
+ "name": "Drei Akkorde",
+ "about": "Punk x Schlager mix that ships with the game: Deezer tracks (30-second previews), no account needed.",
+ "tracks": [
+  {
+   "id": "136859460",
+   "title": "Liebe ohne Leiden",
+   "name": "Liebe ohne Leiden",
+   "artists": "Udo Jürgens",
+   "album": "Merci, Udo!",
+   "image": "https://cdn-images.dzcdn.net/images/cover/43a85babb9770238403ac0798df95269/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "13233341",
+   "title": "Du hast den Farbfilm vergessen",
+   "name": "Du hast den Farbfilm vergessen",
+   "artists": "Nina Hagen",
+   "album": "Was denn... - Hits '74 - '95",
+   "image": "https://cdn-images.dzcdn.net/images/cover/22c06c7fe4cc140dbb01e6177072802c/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "2259568567",
+   "title": "Licht der Stadt",
+   "name": "Licht der Stadt",
+   "artists": "Treptow",
+   "album": "Besser selbst als gar nicht",
+   "image": "https://cdn-images.dzcdn.net/images/cover/362098d7683717902c823bd988bf7f3c/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "1048911",
+   "title": "Wunder gibt es immer wieder",
+   "name": "Wunder gibt es immer wieder",
+   "artists": "Katja Ebstein",
+   "album": "Meine größten Erfolge",
+   "image": "https://cdn-images.dzcdn.net/images/cover/b644b344e5e3bc44fc52237873a80de1/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "1342552812",
+   "title": "Linksradikaler Schlager",
+   "name": "Linksradikaler Schlager",
+   "artists": "Swiss",
+   "album": "Linksradikaler Schlager",
+   "image": "https://cdn-images.dzcdn.net/images/cover/da5192dcdf5c42e024e5ad051d2dd7f1/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "2485421",
+   "title": "Am Tag als Conny Kramer starb",
+   "name": "Am Tag als Conny Kramer starb",
+   "artists": "Juliane Werding",
+   "album": "Die großen Erfolge",
+   "image": "https://cdn-images.dzcdn.net/images/cover/b98d22fb987097aad992c89a5e6eaaf9/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "957274",
+   "title": "Die kleine Kneipe",
+   "name": "Die kleine Kneipe",
+   "artists": "Peter Alexander",
+   "album": "Das große Jubiläumsalbum - 50 Jahre Film, Musik und Bühne",
+   "image": "https://cdn-images.dzcdn.net/images/cover/5926cfd235cc6ea8402fbb4191d4dc89/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "136859376",
+   "title": "Der Teufel hat den Schnaps gemacht",
+   "name": "Der Teufel hat den Schnaps gemacht",
+   "artists": "Udo Jürgens",
+   "album": "Merci, Udo!",
+   "image": "https://cdn-images.dzcdn.net/images/cover/43a85babb9770238403ac0798df95269/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "138382471",
+   "title": "Zeit bleib stehen!",
+   "name": "Zeit bleib stehen!",
+   "artists": "Dritte Wahl",
+   "album": "Fortschritt",
+   "image": "https://cdn-images.dzcdn.net/images/cover/de6b535f86ef271e1c00cc2ee854f351/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "2282876",
+   "title": "Taxi nach Paris",
+   "name": "Taxi nach Paris",
+   "artists": "Felix De Luxe",
+   "album": "Felix Deluxe",
+   "image": "https://cdn-images.dzcdn.net/images/cover/1986f7e7efac19642f73bafb4e72f28f/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "735489032",
+   "title": "Ist da jemand?",
+   "name": "Ist da jemand?",
+   "artists": "Broilers",
+   "album": "Ist da jemand?",
+   "image": "https://cdn-images.dzcdn.net/images/cover/15c6fd602c609b6831053e6e4fc217af/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "3296877",
+   "title": "In meinem Garten",
+   "name": "In meinem Garten",
+   "artists": "Reinhard Mey",
+   "album": "Aus meinem Tagebuch",
+   "image": "https://cdn-images.dzcdn.net/images/cover/ffaf2602a9c16b0babb9cb3e8079d979/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "2339454355",
+   "title": "Kein Problem",
+   "name": "Kein Problem",
+   "artists": "Focus.",
+   "album": "Kein Album",
+   "image": "https://cdn-images.dzcdn.net/images/cover/def0fa1241cc48c808f5faba315fd541/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "1006204982",
+   "title": "Macht euch laut",
+   "name": "Macht euch laut",
+   "artists": "Madsen",
+   "album": "Lichtjahre",
+   "image": "https://cdn-images.dzcdn.net/images/cover/6f9bed02c1d1b13654ee097b55db978f/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "3489487",
+   "title": "Ti amo",
+   "name": "Ti amo (Remastered 2005)",
+   "artists": "Howard Carpendale",
+   "album": "Anthologie Vol. 5: Jede Farbe Ist Schön / Nimm Den Nächsten Zug",
+   "image": "https://cdn-images.dzcdn.net/images/cover/5910aaf593da12715d15316b5d7ed7c6/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "500572472",
+   "title": "Kuhle Typen",
+   "name": "Kuhle Typen",
+   "artists": "Swiss & Die Andern",
+   "album": "Kuhle Typen",
+   "image": "https://cdn-images.dzcdn.net/images/cover/b76a8bd7e5ca323bfa5616cf35c166d9/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "3286063331",
+   "title": "Endlich wieder Discozeit",
+   "name": "Endlich wieder Discozeit",
+   "artists": "Montreal",
+   "album": "Bestandsaufnahme",
+   "image": "https://cdn-images.dzcdn.net/images/cover/e2bd2c93ee3eb84624de063dbe9eb13b/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "3808802692",
+   "title": "Himbeereis zum Frühstück",
+   "name": "Himbeereis zum Frühstück",
+   "artists": "Hoffmann & Hoffmann",
+   "album": "Himbeereis zum Frühstück",
+   "image": "https://cdn-images.dzcdn.net/images/cover/d14bd284d054118ad4815bb94d47f22c/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "820791",
+   "title": "Für mich soll's rote Rosen regnen",
+   "name": "Für mich soll's rote Rosen regnen",
+   "artists": "Hildegard Knef",
+   "album": "Für mich soll's rote Rosen regnen - Ihre 20 schönsten Songs",
+   "image": "https://cdn-images.dzcdn.net/images/cover/fced734e08ac3c01708e411396e9b01c/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "4253142",
+   "title": "Siebzehn Jahr, blondes Haar",
+   "name": "Siebzehn Jahr, blondes Haar",
+   "artists": "Udo Jürgens",
+   "album": "Best Of",
+   "image": "https://cdn-images.dzcdn.net/images/cover/6c869dde80f7929ae810d27c0cf77704/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "1082131",
+   "title": "Flieg' nicht so hoch, mein kleiner Freund",
+   "name": "Flieg' nicht so hoch, mein kleiner Freund",
+   "artists": "Nicole",
+   "album": "Flieg' nicht so hoch, mein kleiner Freund",
+   "image": "https://cdn-images.dzcdn.net/images/cover/6db67567dd788c85c8ea0a3d5e958758/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "15743479",
+   "title": "Joana",
+   "name": "Joana",
+   "artists": "Roland Kaiser",
+   "album": "Hit Collection",
+   "image": "https://cdn-images.dzcdn.net/images/cover/d2da59b847aed2bf5b3eff046b78b717/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "2385642205",
+   "title": "Für immer 21",
+   "name": "Für immer 21",
+   "artists": "Focus.",
+   "album": "Für immer 21",
+   "image": "https://cdn-images.dzcdn.net/images/cover/2c1219846e195e5319219751a8017d78/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "566832",
+   "title": "Über sieben Brücken musst du geh'n",
+   "name": "Über sieben Brücken musst du geh'n",
+   "artists": "Peter Maffay",
+   "album": "Revanche",
+   "image": "https://cdn-images.dzcdn.net/images/cover/9c1fc90b6bbf68a855e5603b1c26b9a8/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "16267932",
+   "title": "Tränen lügen nicht",
+   "name": "Tränen lügen nicht",
+   "artists": "Michael Holm",
+   "album": "Seine grossen Erfolge",
+   "image": "https://cdn-images.dzcdn.net/images/cover/de1e2fee1032853b56fb2525fa86fa8a/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "1006204892",
+   "title": "Keiner",
+   "name": "Keiner",
+   "artists": "Madsen",
+   "album": "Lichtjahre",
+   "image": "https://cdn-images.dzcdn.net/images/cover/6f9bed02c1d1b13654ee097b55db978f/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "1131784",
+   "title": "Manchmal möchte ich schon mit dir",
+   "name": "Manchmal möchte ich schon mit dir",
+   "artists": "Roland Kaiser",
+   "album": "Gefühle sind frei",
+   "image": "https://cdn-images.dzcdn.net/images/cover/444dea3f0d1749402c25f7251f3c656f/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "4253144",
+   "title": "Immer wieder geht die Sonne auf",
+   "name": "Immer wieder geht die Sonne auf",
+   "artists": "Udo Jürgens",
+   "album": "Best Of",
+   "image": "https://cdn-images.dzcdn.net/images/cover/6c869dde80f7929ae810d27c0cf77704/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "1006092662",
+   "title": "Punk ist...",
+   "name": "Punk ist...",
+   "artists": "Die Ärzte",
+   "album": "13",
+   "image": "https://cdn-images.dzcdn.net/images/cover/26a5ec0d23f6de8b65da466d37d2edba/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "1004615712",
+   "title": "Optimisten",
+   "name": "Optimisten",
+   "artists": "Engst",
+   "album": "Flächenbrand",
+   "image": "https://cdn-images.dzcdn.net/images/cover/4e9c662aea3149f4571f0281fa99e86e/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "2322409",
+   "title": "Ich liebe das Leben",
+   "name": "Ich liebe das Leben",
+   "artists": "Vicky Leandros",
+   "album": "Ich Liebe Das Leben",
+   "image": "https://cdn-images.dzcdn.net/images/cover/127c021e64bac985e5775f492aaa039d/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "2258852337",
+   "title": "Dein viel zu lautes Leben",
+   "name": "Dein viel zu lautes Leben",
+   "artists": "Treptow",
+   "album": "Dein viel zu lautes Leben",
+   "image": "https://cdn-images.dzcdn.net/images/cover/8da90f484adf663f001da1baadd2b3e6/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "83116782",
+   "title": "Es fährt ein Zug nach nirgendwo",
+   "name": "Es fährt ein Zug nach nirgendwo",
+   "artists": "Christian Anders",
+   "album": "Es fährt ein Zug nach Nirgendwo (Expanded Edition)",
+   "image": "https://cdn-images.dzcdn.net/images/cover/dc67cfae99cf96ae0430158a66a0abab/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "2339454375",
+   "title": "Lebenslang für immer",
+   "name": "Lebenslang für immer",
+   "artists": "Focus.",
+   "album": "Kein Album",
+   "image": "https://cdn-images.dzcdn.net/images/cover/def0fa1241cc48c808f5faba315fd541/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "136859324",
+   "title": "Lieb Vaterland",
+   "name": "Lieb Vaterland",
+   "artists": "Udo Jürgens",
+   "album": "Merci, Udo!",
+   "image": "https://cdn-images.dzcdn.net/images/cover/43a85babb9770238403ac0798df95269/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "3334986871",
+   "title": "Tetris",
+   "name": "Tetris",
+   "artists": "Swiss & Die Andern",
+   "album": "Punk ist tot",
+   "image": "https://cdn-images.dzcdn.net/images/cover/d770df6ec631a7584a631322b4be72fd/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "630374",
+   "title": "Ohne Dich (schlaf' ich heut Nacht nicht ein)",
+   "name": "Ohne Dich (schlaf' ich heut Nacht nicht ein)",
+   "artists": "Münchener Freiheit",
+   "album": "Schenk Mir Eine Nacht - Ihre Schönsten Lovesongs",
+   "image": "https://cdn-images.dzcdn.net/images/cover/0193a450141cb93e7947afe506c91133/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "2389988245",
+   "title": "Nie wieder Alkohol...vielleicht",
+   "name": "Nie wieder Alkohol...vielleicht",
+   "artists": "Engst",
+   "album": "Irgendwas Ist Immer",
+   "image": "https://cdn-images.dzcdn.net/images/cover/efa8edf9f2caf318b72dd672c760100f/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "1106361732",
+   "title": "Seemann, deine Heimat ist das Meer",
+   "name": "Seemann, deine Heimat ist das Meer",
+   "artists": "Freddy Quinn",
+   "album": "Freddy auf hoher See, Folge 2",
+   "image": "https://cdn-images.dzcdn.net/images/cover/b2d00ef82f4e2e083fdfba5e4ce84e72/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "142608108",
+   "title": "Paradies",
+   "name": "Paradies",
+   "artists": "Die Toten Hosen",
+   "album": "Opium für's Volk (Deluxe-Edition mit Bonus-Tracks)",
+   "image": "https://cdn-images.dzcdn.net/images/cover/cd3174606d6ec3c7aae0d9d4076a51ff/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "70058198",
+   "title": "Das bisschen Haushalt... sagt mein Mann",
+   "name": "Das bisschen Haushalt... sagt mein Mann",
+   "artists": "Johanna Von Koczian",
+   "album": "Das bisschen Haushalt ... sagt mein Mann (Originale)",
+   "image": "https://cdn-images.dzcdn.net/images/cover/551b69160a624f4476a4b15f99472006/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "7063706",
+   "title": "Schön ist es auf der Welt zu sein",
+   "name": "Schön ist es auf der Welt zu sein",
+   "artists": "Roy Black",
+   "album": "Schön ist es auf der Welt zu sein / Compilation",
+   "image": "https://cdn-images.dzcdn.net/images/cover/ea0d740ba6b7ebd0bd050dda8a0e46e5/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "2896110521",
+   "title": "Sirenen",
+   "name": "Sirenen",
+   "artists": "Madsen",
+   "album": "Kompass",
+   "image": "https://cdn-images.dzcdn.net/images/cover/359282001c308539470279d87192ad2f/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "15486005",
+   "title": "Sierra Madre",
+   "name": "Sierra Madre",
+   "artists": "Zillertaler Schürzenjager",
+   "album": "Sierra Madre",
+   "image": "https://cdn-images.dzcdn.net/images/cover/7023b4885eca2f8e42d4a91d6b7fd74c/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "1006111362",
+   "title": "Lasse redn",
+   "name": "Lasse redn",
+   "artists": "Die Ärzte",
+   "album": "Jazz ist anders",
+   "image": "https://cdn-images.dzcdn.net/images/cover/84b8b9f4d730082452e5f14515a985f8/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "79622930",
+   "title": "Ohne Krimi Geht Die Mimi Nie Ins Bett",
+   "name": "Ohne Krimi Geht Die Mimi Nie Ins Bett",
+   "artists": "Bill Ramsey",
+   "album": "Ohne Krimi Geht Die Mimi Nie Ins Bett",
+   "image": "https://cdn-images.dzcdn.net/images/cover/d77497ff841431f7a3351112f69a3de3/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "3786223572",
+   "title": "Wann wird's mal wieder richtig Sommer",
+   "name": "Wann wird's mal wieder richtig Sommer",
+   "artists": "Rudi Carrell",
+   "album": "Das Beste von Rudi Carrell",
+   "image": "https://cdn-images.dzcdn.net/images/cover/2fa41a28a5cd412cf8c3d9bfcb6e75aa/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "1333650182",
+   "title": "Es gibt kein Bier auf Hawaii",
+   "name": "Es gibt kein Bier auf Hawaii",
+   "artists": "Paul Kuhn",
+   "album": "Es gibt kein Bier auf Hawai... - Best of Paul Kuhn",
+   "image": "https://cdn-images.dzcdn.net/images/cover/6999afae3f725aedd4e45ad0dac4ed61/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "3286337171",
+   "title": "Katharine Katharine",
+   "name": "Katharine Katharine",
+   "artists": "Montreal",
+   "album": "Tag zur Nacht",
+   "image": "https://cdn-images.dzcdn.net/images/cover/e43fa5b65043be550df53fedb057dd06/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "3841791331",
+   "title": "Hello Again",
+   "name": "Hello Again (Zeitlos Version)",
+   "artists": "Howard Carpendale",
+   "album": "Zeitlos",
+   "image": "https://cdn-images.dzcdn.net/images/cover/800d6d605c1d11ad2f86aea2235acccc/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "4141170581",
+   "title": "Punkah auf Sri Lanka",
+   "name": "Punkah auf Sri Lanka",
+   "artists": "Swiss & Die Andern",
+   "album": "Grosse Freiheit (Deluxe Edition)",
+   "image": "https://cdn-images.dzcdn.net/images/cover/cf300d0d457f57ef721eae7ddc661350/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "598445",
+   "title": "Schuld war nur der Bossa Nova",
+   "name": "Schuld war nur der Bossa Nova",
+   "artists": "Manuela",
+   "album": "Jive Manuela",
+   "image": "https://cdn-images.dzcdn.net/images/cover/4d77088b319cea094b434f606340bc40/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "529530511",
+   "title": "Mensch Junge",
+   "name": "Mensch Junge",
+   "artists": "Swiss & Die Andern",
+   "album": "Randalieren für die Liebe",
+   "image": "https://cdn-images.dzcdn.net/images/cover/b23b513c366064478f80a00fe15fbccb/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "2259555477",
+   "title": "Insel der Jugend",
+   "name": "Insel der Jugend",
+   "artists": "Treptow",
+   "album": "Von der Zukunft vor dem Fall",
+   "image": "https://cdn-images.dzcdn.net/images/cover/1a0e8bcae9701af58a5916c621f295e3/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "3428716661",
+   "title": "Wir kommen in Deine Stadt",
+   "name": "Wir kommen in Deine Stadt",
+   "artists": "ZSK",
+   "album": "Feuer & Papier",
+   "image": "https://cdn-images.dzcdn.net/images/cover/82b4f963d98fde294135b493ae34c243/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "1334304532",
+   "title": "Alice und Sarah",
+   "name": "Alice und Sarah",
+   "artists": "Broilers",
+   "album": "Puro Amor",
+   "image": "https://cdn-images.dzcdn.net/images/cover/3f28b508c8ba787438692bf0dc4d3d8a/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "1047554",
+   "title": "Und es war Sommer",
+   "name": "Und es war Sommer",
+   "artists": "Peter Maffay",
+   "album": "Und es war Sommer",
+   "image": "https://cdn-images.dzcdn.net/images/cover/702b4d3a986fe19cdd606495f5466d7b/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "697623",
+   "title": "Marmor, Stein und Eisen bricht",
+   "name": "Marmor, Stein und Eisen bricht",
+   "artists": "Drafi Deutscher",
+   "album": "Drafi!",
+   "image": "https://cdn-images.dzcdn.net/images/cover/cb64e10331db57ebd6bd8a425d42bb35/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "3786035362",
+   "title": "Leuchtturm",
+   "name": "Leuchtturm",
+   "artists": "Nena",
+   "album": "Nena",
+   "image": "https://cdn-images.dzcdn.net/images/cover/c7c1153188e48a2ae756b1bc3fd6b441/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "142393473",
+   "title": "Bonnie & Clyde",
+   "name": "Bonnie & Clyde",
+   "artists": "Die Toten Hosen",
+   "album": "All die ganzen Jahre: Ihre besten Lieder",
+   "image": "https://cdn-images.dzcdn.net/images/cover/771f6d3ab5d2495879b3fe3b3bb369ca/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "866632",
+   "title": "Junimond",
+   "name": "Junimond",
+   "artists": "Rio Reiser",
+   "album": "Junimond - Die Balladen",
+   "image": "https://cdn-images.dzcdn.net/images/cover/a024a51fbb42e8ec0ff085ab9e13ac5b/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "2269594117",
+   "title": "Der Puppenspieler Von Mexico",
+   "name": "Der Puppenspieler Von Mexico",
+   "artists": "Roberto Blanco",
+   "album": "Erinnerungen",
+   "image": "https://cdn-images.dzcdn.net/images/cover/c0b59c977537e259ad2494770e21db18/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "95000084",
+   "title": "Zu wahr um schön zu sein",
+   "name": "Zu wahr um schön zu sein",
+   "artists": "Dritte Wahl",
+   "album": "Geblitzdingst",
+   "image": "https://cdn-images.dzcdn.net/images/cover/485b4db2257a5e43d92a341eb09ac1c2/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "4253149",
+   "title": "Mit 66 Jahren",
+   "name": "Mit 66 Jahren",
+   "artists": "Udo Jürgens",
+   "album": "Best Of",
+   "image": "https://cdn-images.dzcdn.net/images/cover/6c869dde80f7929ae810d27c0cf77704/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "1749433067",
+   "title": "Sein wie die",
+   "name": "Sein wie die",
+   "artists": "Slime",
+   "album": "Zwei",
+   "image": "https://cdn-images.dzcdn.net/images/cover/65591ca007f508a78a6b0151b5bbbd32/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "2500665",
+   "title": "Irgendwann bleib i dann dort",
+   "name": "Irgendwann bleib i dann dort",
+   "artists": "S.T.S.",
+   "album": "STS-Best Of",
+   "image": "https://cdn-images.dzcdn.net/images/cover/f0bc4134b844c89f0541db13404c4930/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "1006092782",
+   "title": "Männer sind Schweine",
+   "name": "Männer sind Schweine",
+   "artists": "Die Ärzte",
+   "album": "13",
+   "image": "https://cdn-images.dzcdn.net/images/cover/26a5ec0d23f6de8b65da466d37d2edba/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "3653442482",
+   "title": "Sleben",
+   "name": "Sleben",
+   "artists": "Wizo",
+   "album": "Rakäthe bringt das Licht",
+   "image": "https://cdn-images.dzcdn.net/images/cover/8327c92cab42b9afe15ade542cda47b8/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "105084160",
+   "title": "Schmidtchen Schleicher",
+   "name": "Schmidtchen Schleicher",
+   "artists": "Nico Haak",
+   "album": "Partykeller-Knaller",
+   "image": "https://cdn-images.dzcdn.net/images/cover/e1aab9f095ea93131258d5ad7634afb4/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "2269859",
+   "title": "Du schwarzer Zigeuner",
+   "name": "Du schwarzer Zigeuner",
+   "artists": "Vico Torriani",
+   "album": "Einfach Danke (Meine 20 größten Hits)",
+   "image": "https://cdn-images.dzcdn.net/images/cover/800ebdb143282a4eecca746601570ab9/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "3428716651",
+   "title": "3 Uhr nachts",
+   "name": "3 Uhr nachts",
+   "artists": "ZSK",
+   "album": "Feuer & Papier",
+   "image": "https://cdn-images.dzcdn.net/images/cover/82b4f963d98fde294135b493ae34c243/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "395215762",
+   "title": "Der Himmel über uns",
+   "name": "Der Himmel über uns",
+   "artists": "Dritte Wahl",
+   "album": "10",
+   "image": "https://cdn-images.dzcdn.net/images/cover/a38f6ead00fd94936e7c356b9546a0ed/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "3423190381",
+   "title": "Amore Mio",
+   "name": "Amore Mio",
+   "artists": "Roy Bianco & Die Abbrunzati Boys",
+   "album": "Amore Mio",
+   "image": "https://cdn-images.dzcdn.net/images/cover/1f5f1a5d815a87493fb2de93265fa07f/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "1372014832",
+   "title": "Antifa",
+   "name": "Antifa",
+   "artists": "Swiss",
+   "album": "Linksradikaler Schlager",
+   "image": "https://cdn-images.dzcdn.net/images/cover/dc3ffed9de38cebe4e50e656346f8e9f/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "115878038",
+   "title": "Rauch-Haus-Song",
+   "name": "Rauch-Haus-Song",
+   "artists": "Ton Steine Scherben",
+   "album": "Keine Macht für niemand",
+   "image": "https://cdn-images.dzcdn.net/images/cover/00c93e4c72852e60595b17f3e656445a/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "2246380527",
+   "title": "O Walesee",
+   "name": "O Walesee",
+   "artists": "Trio Eugster",
+   "album": "40 Trio Eugster Top Hits",
+   "image": "https://cdn-images.dzcdn.net/images/cover/b3ee84d860d7f1d5444617228e1d05b9/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "735484572",
+   "title": "Meine Sache",
+   "name": "Meine Sache",
+   "artists": "Broilers",
+   "album": "Vanitas",
+   "image": "https://cdn-images.dzcdn.net/images/cover/aafe4c700324cc95841599b19a86f32b/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "3551861321",
+   "title": "Fallen in Liebe",
+   "name": "Fallen in Liebe",
+   "artists": "Kraftklub",
+   "album": "Sterben in Karl-Marx-Stadt",
+   "image": "https://cdn-images.dzcdn.net/images/cover/74c65dddaa58b164f359c317323f8185/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "2348896855",
+   "title": "Reif für die Insel",
+   "name": "Reif für die Insel",
+   "artists": "Peter Cornelius",
+   "album": "Reif für die Insel",
+   "image": "https://cdn-images.dzcdn.net/images/cover/78b1fff47468249f1a7057b4836a2f49/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "1145335572",
+   "title": "Dusche",
+   "name": "Dusche",
+   "artists": "Farin Urlaub",
+   "album": "Dusche",
+   "image": "https://cdn-images.dzcdn.net/images/cover/fd920b9f6b62e0c44497344f7cb232e6/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "3063883101",
+   "title": "Aber bitte mit Sahne",
+   "name": "Aber bitte mit Sahne",
+   "artists": "Udo Jürgens",
+   "album": "udo live 77",
+   "image": "https://cdn-images.dzcdn.net/images/cover/24db2bfe4b4c56c8fb3ea67ae0419f8e/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "1749433037",
+   "title": "Taschenlampe",
+   "name": "Taschenlampe",
+   "artists": "Slime",
+   "album": "Zwei",
+   "image": "https://cdn-images.dzcdn.net/images/cover/65591ca007f508a78a6b0151b5bbbd32/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "3506388961",
+   "title": "Wenn du dumm bist",
+   "name": "Wenn du dumm bist",
+   "artists": "Engst",
+   "album": "Wenn du dumm bist",
+   "image": "https://cdn-images.dzcdn.net/images/cover/d79e629a087e806db83021366b410435/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "1408767732",
+   "title": "Ich will 'nen Cowboy als Mann",
+   "name": "Ich will 'nen Cowboy als Mann",
+   "artists": "Gitte Hænning",
+   "album": "Electrola… Das ist Musik! Gitte Hænning",
+   "image": "https://cdn-images.dzcdn.net/images/cover/96dcd95edd502dd4e2f7a3b0ddd2ac1c/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "957277",
+   "title": "Der Papa wird's schon richten",
+   "name": "Der Papa wird's schon richten",
+   "artists": "Peter Alexander",
+   "album": "Das große Jubiläumsalbum - 50 Jahre Film, Musik und Bühne",
+   "image": "https://cdn-images.dzcdn.net/images/cover/5926cfd235cc6ea8402fbb4191d4dc89/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "1914520667",
+   "title": "Lotosblume",
+   "name": "Lotosblume",
+   "artists": "Die Flippers",
+   "album": "Lotosblume",
+   "image": "https://cdn-images.dzcdn.net/images/cover/9bc79a43f65382a9155ae91601c7343d/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "1151629002",
+   "title": "Ich habe Besseres zu tun",
+   "name": "Ich habe Besseres zu tun",
+   "artists": "ZSK",
+   "album": "Ende der Welt",
+   "image": "https://cdn-images.dzcdn.net/images/cover/b9ec8d3c0272ae95a9befa6ffa7ab416/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "648194702",
+   "title": "Die Zuckerpuppe aus der Bauchtanz-Truppe",
+   "name": "Die Zuckerpuppe aus der Bauchtanz-Truppe",
+   "artists": "Bill Ramsey",
+   "album": "Zuckerpuppe",
+   "image": "https://cdn-images.dzcdn.net/images/cover/c2150a188cd66c92071680c457ab0f6c/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "681528",
+   "title": "Harm Rochel",
+   "name": "Harm Rochel",
+   "artists": "Turbostaat",
+   "album": "Vormann Leiss",
+   "image": "https://cdn-images.dzcdn.net/images/cover/b57e56f6cc3998284fa8ec42dbbd0f81/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "4298018852",
+   "title": "Amsterdam",
+   "name": "Amsterdam",
+   "artists": "Cora",
+   "album": "Komm wir fahren nach Amsterdam",
+   "image": "https://cdn-images.dzcdn.net/images/cover/57e5b17495d6b9fdc34ea591b5a658cc/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "1006099702",
+   "title": "Ist das noch Punkrock?",
+   "name": "Ist das noch Punkrock?",
+   "artists": "Die Ärzte",
+   "album": "auch",
+   "image": "https://cdn-images.dzcdn.net/images/cover/a70aa0db3e8ecefe627efef6270f1beb/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "61554521",
+   "title": "Kein Gerede",
+   "name": "Kein Gerede",
+   "artists": "Wizo",
+   "album": "Bleib Tapfer/Für'n Arsch",
+   "image": "https://cdn-images.dzcdn.net/images/cover/907313e6ce9f747c1e83d4eb07ae0b8f/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "3271323601",
+   "title": "Manchmal finde ich dich scheisse (feat. FiNCH)",
+   "name": "Manchmal finde ich dich scheisse (feat. FiNCH)",
+   "artists": "Feine Sahne Fischfilet",
+   "album": "Manchmal finde ich dich scheisse (feat. FiNCH)",
+   "image": "https://cdn-images.dzcdn.net/images/cover/9b579a904d589ac780c5bddfb3b9cf86/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "1116900132",
+   "title": "Fürstenfeld",
+   "name": "Fürstenfeld",
+   "artists": "S.T.S.",
+   "album": "Après-Ski 2021",
+   "image": "https://cdn-images.dzcdn.net/images/cover/faff88fb6361c6f74a00f35d94d2779c/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "7905036",
+   "title": "Weus'd a Herz hast wia a Bergwerk",
+   "name": "Weus'd a Herz hast wia a Bergwerk",
+   "artists": "Rainhard Fendrich",
+   "album": "Das Beste von Rainhard Fendrich",
+   "image": "https://cdn-images.dzcdn.net/images/cover/bac2061fa43850a8223d4661a9edfd7d/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "470534292",
+   "title": "Ein bisschen Spaß muss sein",
+   "name": "Ein bisschen Spaß muss sein",
+   "artists": "Roberto Blanco",
+   "album": "Ein bisschen Spass muss sein - Das neue Best of Album",
+   "image": "https://cdn-images.dzcdn.net/images/cover/ce8d7a361a34f0507ff148bee837fe0d/1000x1000-000000-80-0-0.jpg"
+  },
+  {
+   "id": "3182665661",
+   "title": "Denker und Dichter",
+   "name": "Denker und Dichter",
+   "artists": "Engst",
+   "album": "Denker und Dichter",
+   "image": "https://cdn-images.dzcdn.net/images/cover/926dfa72fc9e48f31ed69c281517ff28/1000x1000-000000-80-0-0.jpg"
+  }
+ ]
+}

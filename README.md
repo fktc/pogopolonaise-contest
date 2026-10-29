@@ -1,6 +1,11 @@
 # Pogo & Polonaise — Song Contest
 
-*Drei Akkorde. Alle singen mit.* A punk × Schlager styled, two-player "name that tune" buzzer game that plays songs from your own Spotify playlists, right in the browser.
+*Drei Akkorde. Alle singen mit.* A punk × Schlager styled, two-player "name that tune" buzzer game, right in the browser.
+
+## Music sources
+
+- **Deezer (default):** no login, no account. The game plays Deezer's 30-second previews, so a round lasts at most 25 s and the clip always starts at the same spot. **Ready-made mixes** are one tap away on the setup screen: *Drei Akkorde* (punk × Schlager, ships with the game in `public/mixes/`), *Schlager*, *Malle*, *Deutschpunk*, *Après-Ski* and *NDW* (public Deezer playlists, mostly by Deezer's editors; edit `MIXES` in `public/app.js` to change them). Own links can be added on top via *Eigene Playlist dazunehmen*: Deezer playlist/album links (short links like `link.deezer.com/…` work too). **Spotify links also work:** their songs are looked up on Deezer (the full list if Spotify is connected, otherwise the first 100 songs from the playlist's public page). The clips play in the browser through Web Audio, so the transition is a real crossfade: the next song starts while the old one fades out. Works the same on phones (`/mobile`), no Spotify app needed. Deezer's API is reached through the server (`deezer.js`, throttled to stay under Deezer's 50 requests per 5 s).
+- **Spotify:** full songs, needs Spotify Premium and — while the Spotify app is in Development Mode — an account listed under *User Management*. Setup below.
 
 ## Design
 

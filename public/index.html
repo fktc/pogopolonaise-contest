@@ -68,7 +68,14 @@
 
       <form class="card setup" id="setup-form" autocomplete="off">
         <div class="step">
-          <h2><span class="num">1</span> Spotify</h2>
+          <h2><span class="num">1</span> Musik</h2>
+          <div class="sources">
+            <label class="source-opt"><input type="radio" name="source" value="deezer">
+              <span><b>Deezer</b> Sofort spielen, ohne Login – 30-Sekunden-Ausschnitte.</span></label>
+            <label class="source-opt"><input type="radio" name="source" value="spotify">
+              <span><b>Spotify</b> Ganze Songs – braucht Spotify Premium und eine Freischaltung.</span></label>
+          </div>
+          <div id="spotify-block">
           <div id="spotify-disconnected">
             <label class="field" id="client-id-field">Client ID
               <input id="client-id" placeholder="von developer.spotify.com/dashboard" spellcheck="false">
@@ -84,15 +91,23 @@
               <div id="device-list"></div>
             </div>
           </div>
+          </div>
         </div>
 
         <div class="step">
-          <h2><span class="num">2</span> Playlists</h2>
-          <textarea id="playlists" rows="3" spellcheck="false" placeholder="https://open.spotify.com/playlist/…&#10;ein Link pro Zeile"></textarea>
-          <p class="hint">Ein oder mehrere Playlist- oder Album-Links. Alle Songs kommen in einen Topf.</p>
-          <div id="recent" class="recent" hidden>
-            <p class="hint">Zuletzt gespielt – antippen zum Dazunehmen oder Weglassen:</p>
-            <div id="recent-list"></div>
+          <h2><span class="num">2</span> Songs</h2>
+          <div id="mixes-block">
+            <div class="mixes" id="mixes"></div>
+            <p class="hint">Tipp einen oder mehrere Mixe an – alle Songs kommen in einen Topf.</p>
+            <button type="button" class="link" id="custom-toggle"></button>
+          </div>
+          <div id="custom-block">
+            <textarea id="playlists" rows="3" spellcheck="false" placeholder="https://www.deezer.com/playlist/…&#10;ein Link pro Zeile"></textarea>
+            <p class="hint" id="playlists-hint"></p>
+            <div id="recent" class="recent" hidden>
+              <p class="hint">Zuletzt gespielt – antippen zum Dazunehmen oder Weglassen:</p>
+              <div id="recent-list"></div>
+            </div>
           </div>
         </div>
 
@@ -130,12 +145,13 @@
                 <option value="60">60 Sekunden</option>
               </select>
             </label>
-            <label class="field">Song startet
+            <label class="field" id="start-pos-field">Song startet
               <select id="start-pos">
                 <option value="intro">am Anfang</option>
                 <option value="random">irgendwo mittendrin</option>
               </select>
             </label>
+            <p class="hint score-note" id="limit-note" hidden>Mit Deezer dauert eine Runde höchstens 25 Sekunden – länger sind die Ausschnitte nicht.</p>
             <p class="hint score-note">Schnell sein lohnt sich: Ein Song ist am Anfang 10 Punkte wert und sinkt bis auf 1 Punkt, wenn die Zeit abläuft.</p>
             <label class="check pass-rule">Sagt jemand «kenn ich nicht», kriegt das andere Team
               <select id="pass-factor">

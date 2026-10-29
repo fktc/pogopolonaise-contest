@@ -2,7 +2,10 @@
 
 This file is for AI coding agents (Claude Code, Codex, Cursor, …) working in this repository. The human-facing docs are in [README.md](README.md).
 
-The game is a two-player "name that tune" buzzer game. It plays songs from the user's own Spotify playlists in the browser. Most first-time users need help with one thing: **connecting their Spotify account**. Before anything else, check whether they have a Spotify app and Client ID, and walk them through the setup below if not.
+The game is a two-player "name that tune" buzzer game in the browser. It has two music sources, chosen in step 1 of the setup screen:
+
+- **Deezer (default):** needs no setup, account or login. It plays Deezer's 30-second previews. The setup screen offers ready-made mixes (`MIXES` in `public/app.js`), so players don't need playlist links at all; own Deezer or Spotify links can be added on top (Spotify songs are looked up on Deezer). For most users, `npm start` is all it takes.
+- **Spotify:** full songs, but the user needs Spotify Premium and their own Spotify app. Only if they want this, walk them through *Connecting Spotify* below.
 
 ## What you can and can't do for the user
 
@@ -42,7 +45,7 @@ The terminal running `npm start` logs what the game does: songs started, Spotify
 ## Running and checking changes
 
 - There are no dependencies and no build step: plain Node (`server.js`) and browser JavaScript (`public/`). Don't add npm packages or a bundler unless the user asks.
-- There's no test suite. At least run `node --check` on every JS file you changed, then let the user try it in the browser. The game needs a real Spotify login, so you can't play it headlessly.
+- There's no test suite. At least run `node --check` on every JS file you changed, then let the user try it in the browser. Headless browsers have no audio output, so playback can't be verified headlessly.
 - The server serves `public/` straight from disk, so a page reload picks up front-end changes. Restart it only after changes to `server.js` or `sessions.js`.
 - `tools/kids-playlist.js` is an optional helper that creates a Spotify playlist of Swiss kids' songs. It logs in on port 8888 itself, so stop the game server first. It also asks for extra permissions (to create and edit playlists), so the user approves once more.
 
