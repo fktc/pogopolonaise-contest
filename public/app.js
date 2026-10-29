@@ -700,8 +700,27 @@ async function loadDevices() {
 // they play through Web Audio: exact starts, fades that also work on phones, and a real crossfade — the next song
 // starts while the old one is still fading out. The server (deezer.js) supplies playlists and fresh preview links.
 const DEEZER_MAX_LIMIT = 25; // seconds per round: the previews are 30 s long
+const XFADE_MS = 4000; // Deezer crossfade: both songs audible for this long
+const FIRST_FADE_MS = 1200; // fade-in of the very first song (nothing to blend with)
+
+// Equal-power fade: one song goes down along a cosine while the other comes up along a sine, so the overall
+// loudness stays even. (An exponential fade-out drops the old song almost at once and sounds like a cut.)
+// Built from short linear steps rather than setValueCurveAtTime, which throws when it overlaps another curve.
+function equalPowerRamp(param, ctx, from, to, ms, direction) {
+  const now = ctx.currentTime;
+  const steps = 32;
+  param.cancelScheduledValues(now);
+  param.setValueAtTime(Math.max(from, 0.0001), now);
+  for (let i = 1; i <= steps; i++) {
+    const x = i / steps;
+    const k = direction === 'in' ? Math.sin((x * Math.PI) / 2) : Math.cos((x * Math.PI) / 2);
+    const v = direction === 'in' ? from + (to - from) * k : to + (from - to) * k;
+    param.linearRampToValueAtTime(Math.max(v, 0.0001), now + (x * ms) / 1000);
+  }
+}
 const deezerPlayer = {
-  crossfade: true, // nextRound lets songs overlap instead of riser + drop
+  crossfade: true, // nextRound lets songs overlap instead of riser + drop; playFrom also does the fade-in
+  crossfadeMs: XFADE_MS,
   pollMs: 100,
   level: store.get(LS.volume, 0.8),
   fadeId: 0,
@@ -737,10 +756,14 @@ const deezerPlayer = {
   async playFrom(tracks, index, positionMs) {
     const t = tracks[index];
     const buffer = await withTimeout(this.load(t), 20_000, 'der Ausschnitt lädt nicht');
-    if (this.current) this.retire(this.current, FADE_IN_MS); // the old song fades out while this one fades in
+    const blending = Boolean(this.current?.source);
+    if (blending) this.retire(this.current, XFADE_MS); // the old song fades out while this one fades in
     this.current = { track: t, buffer, offset: Math.min(positionMs / 1000, Math.max(0, buffer.duration - 1)), paused: true };
     this.level = 0;
     this.start(this.current);
+    this.fadeId++;
+    this.level = this.userVolume; // where the fade-in ends (pause/resume continue from there)
+    equalPowerRamp(this.current.gain.gain, this.ctx, 0, this.level, blending ? XFADE_MS : FIRST_FADE_MS, 'in');
     const next = tracks[index + 1];
     if (next) this.load(next).catch(() => {}); // ready before anyone presses "next"
   },
@@ -765,9 +788,7 @@ const deezerPlayer = {
     const ctx = this.ctx;
     const g = c.gain.gain;
     const src = c.source;
-    g.cancelScheduledValues(ctx.currentTime);
-    g.setValueAtTime(Math.max(g.value, 0.0001), ctx.currentTime);
-    g.exponentialRampToValueAtTime(0.0001, ctx.currentTime + ms / 1000);
+    equalPowerRamp(g, ctx, g.value, 0, ms, 'out');
     src.stop(ctx.currentTime + ms / 1000 + 0.05);
     this.tails.add(src);
     src.addEventListener('ended', () => this.tails.delete(src));
@@ -1665,7 +1686,7 @@ async function nextRound({ fade = false } = {}) {
     Object.assign(game, { phase: 'fading', outroEndsAt: performance.now() + OUTRO_MS, hurry: false });
     render();
     // (a 30-second Deezer clip may run out before the outro is over: then go on right away)
-    while (!game.hurry && performance.now() < game.outroEndsAt - OUTRO_FADE_MS && !(music.remainingMs?.() < 3000)) {
+    while (!game.hurry && performance.now() < game.outroEndsAt - OUTRO_FADE_MS && !(music.remainingMs?.() < (music.crossfadeMs || 0) + 500)) {
       await sleep(50);
       if (token !== game.token) return;
     }
@@ -1814,7 +1835,7 @@ function beginPlaying() {
   startClock();
   const t = currentTrack();
   debugLog('round', game.index + 1, 'started:', t.name, '—', t.artists, `| fade in from ${music.level.toFixed(2)}`);
-  music.fade(music.userVolume, FADE_IN_MS);
+  if (!music.crossfade) music.fade(music.userVolume, FADE_IN_MS); // Deezer fades in itself (playFrom)
   render();
 }
 
@@ -1905,7 +1926,7 @@ async function watchSongEnd(token) {
     if (token !== game.token || game.phase !== 'reveal') return;
     const s = await music.state();
     const duration = s?.duration || s?.track_window?.current_track?.duration_ms;
-    if (s && !s.paused && duration && duration - s.position < OUTRO_MS + 1500) {
+    if (s && !s.paused && duration && duration - s.position < OUTRO_MS + (music.crossfadeMs || 0) + 1500) {
       debugLog('round', game.index + 1, 'song is ending — on to the next one');
       next();
       return;
